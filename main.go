@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	config := config.InitConfig()
+	config := config.ReadEnv()
 	database := database.InitDB(config)
 	errMigrate := migration.InitMigrate(database)
 	if errMigrate != nil {

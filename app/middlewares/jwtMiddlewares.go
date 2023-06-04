@@ -9,9 +9,11 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+var appConfig = config.ReadEnv()
+
 func JWTMiddleware() echo.MiddlewareFunc{
 	return echojwt.WithConfig(echojwt.Config{
-		SigningKey: []byte(config.SECRET_JWT),
+		SigningKey: []byte(appConfig.JWT_ACCESS_TOKEN),
 		SigningMethod: "HS256",
 	})
 }
@@ -22,7 +24,7 @@ func CreateToken(userId int) (string, error){
 	claims["userId"] = userId
 	claims["exp"]= time.Now().Add(time.Hour*1).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,claims)
-	return token.SignedString([]byte(config.SECRET_JWT))
+	return token.SignedString([]byte(appConfig.JWT_ACCESS_TOKEN))
 }
 
 func ExtracTokenUserId(e echo.Context) int{
