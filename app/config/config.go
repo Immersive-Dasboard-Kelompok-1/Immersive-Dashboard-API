@@ -16,6 +16,10 @@ type AppConfig struct {
 	JWT_ACCESS_TOKEN		string 
 }
 
+var (
+	SECRET_JWT = ""
+)
+
 func InitConfig() *AppConfig {
 	appConfig := AppConfig{}
 
@@ -35,5 +39,6 @@ func InitConfig() *AppConfig {
 	appConfig.DB_NAME = viper.Get("DB_NAME").(string)
 	appConfig.JWT_ACCESS_TOKEN = viper.Get("JWT_ACCESS_TOKEN").(string)
 
+	SECRET_JWT = appConfig.JWT_ACCESS_TOKEN
 	return &appConfig
 }
