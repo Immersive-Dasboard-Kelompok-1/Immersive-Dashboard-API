@@ -76,3 +76,17 @@ func (handler *ClassHandler) DeleteClass(c echo.Context) error{
 	}
 	return c.JSON(http.StatusOK, helper.SuccessResponse("delete successfuly"))
 }
+
+func (handler *ClassHandler) GetAll(c echo.Context) error{
+
+	dataClass, err := handler.classService.GetAll()
+	if err != nil{
+		return c.JSON(http.StatusBadRequest,helper.FailedResponse("error read class"))
+	}
+	var ClassResponAll []Response
+	for _,value := range dataClass{
+		dataResponse :=CoreToResponse(value)
+		ClassResponAll = append(ClassResponAll, dataResponse)
+	}
+	return c.JSON(http.StatusOK,helper.SuccessWithDataResponse("Success read data class",ClassResponAll))
+}

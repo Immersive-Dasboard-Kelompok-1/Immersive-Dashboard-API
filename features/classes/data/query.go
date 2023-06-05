@@ -11,20 +11,36 @@ type classQuery struct {
 	db *gorm.DB
 }
 
+// SelectAll implements classes.ClassDataInterface
+func (repo *classQuery) SelectAll() ([]classes.Core, error) {
+	var classDataAll []Classes
+	tx := repo.db.Find(&classDataAll)
+	if tx.Error != nil{
+		return []classes.Core{},tx.Error
+	}
+
+	var classAll []classes.Core
+	for _,value := range classDataAll{
+		classCore := ModelToCore(value)
+		classAll = append(classAll, classCore)
+	}
+	return  classAll, nil
+}
+
 // Delete implements classes.ClassDataInterface
-func (repo *classQuery) Deleted(id int,UserId int) error {
+func (repo *classQuery) Deleted(id int, UserId int) error {
 	var classData Classes
-	errDelete := repo.db.Delete(&classData,"id=? AND user_id=?",id,UserId)
-	if errDelete.Error != nil{
+	errDelete := repo.db.Delete(&classData, "id=? AND user_id=?", id, UserId)
+	if errDelete.Error != nil {
 		return errDelete.Error
 	}
 	return nil
 }
 
 // Update implements classes.ClassDataInterface
-func (repo *classQuery) Update(id int,UserId int, input classes.Core) error {
+func (repo *classQuery) Update(id int, UserId int, input classes.Core) error {
 	classInput := CoreToModel(input)
-	err := repo.db.Model(&Classes{}).Where("id=? AND user_id=?",id,UserId).Updates(UpdateClass(classInput))
+	err := repo.db.Model(&Classes{}).Where("id=? AND user_id=?", id, UserId).Updates(UpdateClass(classInput))
 	if err != nil {
 		return err.Error
 	}
@@ -35,7 +51,7 @@ func (repo *classQuery) Update(id int,UserId int, input classes.Core) error {
 }
 
 // Insert implements classes.ClassDataInterface
-func (repo *classQuery) Insert(input classes.Core,UserId int) error {
+func (repo *classQuery) Insert(input classes.Core, UserId int) error {
 	classInput := CoreToModel(input)
 	classInput.UserID = uint(UserId)
 	tx := repo.db.Create(&classInput)

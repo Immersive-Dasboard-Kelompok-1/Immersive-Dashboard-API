@@ -24,6 +24,16 @@ func CoreToModel(input classes.Core) Classes{
 		Mentees: []data.Mentees{},
 	}
 }
+func ModelToCore(input Classes) classes.Core{
+	return classes.Core{
+		Id:   input.ID,
+		Name:    input.Name,
+		Tag:     input.Tag,
+		UserID:  input.UserID,
+		CreatedAt: input.CreatedAt,
+		
+	}
+}
 
 func UpdateClass(input Classes)Classes{
 	return Classes{
