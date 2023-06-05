@@ -15,14 +15,14 @@ type classService struct {
 }
 
 // Delete implements classes.ClassServiceInterface
-func (service *classService) Deleted(id int) error {
-	err := service.classData.Deleted(id)
+func (service *classService) Deleted(id int,UserId int) error {
+	err := service.classData.Deleted(id,UserId)
 	return err
 }
 
 // Edit implements classes.ClassServiceInterface
-func (service *classService) Edit(id int, input classes.Core) error {
-	err := service.classData.Update(id, input)
+func (service *classService) Edit(id int,UserId int, input classes.Core) error {
+	err := service.classData.Update(id,UserId, input)
 	if err != nil {
 		return fmt.Errorf("failed to update classses with ID %d:%w", id, err)
 	}
@@ -30,13 +30,13 @@ func (service *classService) Edit(id int, input classes.Core) error {
 }
 
 // Create implements classes.ClassServiceInterface
-func (service *classService) Create(input classes.Core) error {
+func (service *classService) Create(input classes.Core,UserId int) error {
 	errValidate := service.validate.Struct(input)
 	if errValidate != nil {
 		return errValidate
 	}
 
-	errInsert := service.classData.Insert(input)
+	errInsert := service.classData.Insert(input,UserId)
 	return errInsert
 }
 
