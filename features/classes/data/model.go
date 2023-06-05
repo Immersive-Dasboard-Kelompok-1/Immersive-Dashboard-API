@@ -1,6 +1,7 @@
 package data
 
 import (
+	"alta/immersive-dashboard-api/features/classes"
 	"alta/immersive-dashboard-api/features/mentees/mentee/data"
 
 	"gorm.io/gorm"
@@ -9,7 +10,25 @@ import (
 type Classes struct {
 	gorm.Model
 	Name			string 		`gorm:"type:varchar(50);notNull"`
-	Tag				string		`gorm:"type:varchar(5);notNull"`
+	Tag				string		`gorm:"type:varchar(10);notNull"`
 	UserID		uint
 	Mentees 	[]data.Mentees `gorm:"foreignKey:ClassID"`
+}
+
+func CoreToModel(input classes.Core) Classes{
+	return Classes{
+		Model:   gorm.Model{},
+		Name:    input.Name,
+		Tag:     input.Tag,
+		UserID:  input.UserID,
+		Mentees: []data.Mentees{},
+	}
+}
+
+func UpdateClass(input Classes)Classes{
+	return Classes{
+		Name: input.Name,
+		Tag: input.Tag,
+		UserID: input.UserID,
+	}
 }
