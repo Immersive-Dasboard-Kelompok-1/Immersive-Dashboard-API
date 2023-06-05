@@ -2,6 +2,7 @@ package handler
 
 import (
 	"alta/immersive-dashboard-api/app/helper"
+	"alta/immersive-dashboard-api/app/middlewares"
 	"alta/immersive-dashboard-api/features/classes"
 	"net/http"
 	"strconv"
@@ -21,6 +22,7 @@ func New(service classes.ClassServiceInterface) *ClassHandler{
 }
 
 func (handler *ClassHandler) CreateClass(c echo.Context) error{
+	userId := middlewares.ExtracTokenUserId(c)
 	classInput := ClassRequest{}
 	errBind := c.Bind(&classInput)
 	if errBind != nil{
@@ -28,7 +30,7 @@ func (handler *ClassHandler) CreateClass(c echo.Context) error{
 	}
 	classCore := RequestToCore(classInput)
 
-	err := handler.classService.Create(classCore)
+	err := handler.classService.Create(classCore,userId )
 	if err != nil{
 		if strings.Contains(err.Error(),"validation"){
 			return c.JSON(http.StatusBadRequest,helper.FailedResponse(err.Error()))
@@ -41,6 +43,7 @@ func (handler *ClassHandler) CreateClass(c echo.Context) error{
 }
 
 func (handler *ClassHandler) UpdateClass(c echo.Context) error{
+	userId := middlewares.ExtracTokenUserId(c)
 	id := c.Param("id")
 	classInput := ClassRequest{}
 	idConv, errConv := strconv.Atoi(id)
@@ -52,7 +55,7 @@ func (handler *ClassHandler) UpdateClass(c echo.Context) error{
 		return c.JSON(http.StatusBadRequest, helper.FailedResponse("bind error, update failed"))
 	}
 	classCore :=RequestToCore(classInput)
-	errUpdate := handler.classService.Edit(idConv,classCore)
+	errUpdate := handler.classService.Edit(idConv,userId,classCore)
 	if errUpdate != nil{
 		return c.JSON(http.StatusBadRequest, helper.FailedResponse("error update data"))
 	}
@@ -60,13 +63,14 @@ func (handler *ClassHandler) UpdateClass(c echo.Context) error{
 }
 
 func (handler *ClassHandler) DeleteClass(c echo.Context) error{
+	userId := middlewares.ExtracTokenUserId(c)
 	id := c.Param("id")
 	idConv, errConv := strconv.Atoi(id)
 	if errConv != nil{
 		return c.JSON(http.StatusBadRequest,helper.FailedResponse("Delete error"))
 	}
 
-	err := handler.classService.Deleted(idConv)
+	err := handler.classService.Deleted(idConv,userId)
 	if err != nil{
 		return c.JSON(http.StatusBadRequest, helper.FailedResponse("error delete class"))
 	}

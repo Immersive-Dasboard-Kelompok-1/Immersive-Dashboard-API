@@ -17,14 +17,14 @@ type Core struct {
 }
 
 type ClassDataInterface interface {
-	Insert(input Core) error
-	Update(id int,input Core) error
-	Deleted(id int) error
+	Insert(input Core,UserId int) error
+	Update(id int,UserId int,input Core) error
+	Deleted(id int,UserId int) error
 
 }
 
 type ClassServiceInterface interface {
-	Create(input Core) error
-	Edit(id int,input Core) error
-	Deleted(id int) error
+	Create(input Core,UserId int) error
+	Edit(id int,UserId int,input Core) error
+	Deleted(id int,UserId int) error
 }

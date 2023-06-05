@@ -12,9 +12,9 @@ type classQuery struct {
 }
 
 // Delete implements classes.ClassDataInterface
-func (repo *classQuery) Deleted(id int) error {
+func (repo *classQuery) Deleted(id int,UserId int) error {
 	var classData Classes
-	errDelete := repo.db.Delete(&classData,id)
+	errDelete := repo.db.Delete(&classData,"id=? AND user_id=?",id,UserId)
 	if errDelete.Error != nil{
 		return errDelete.Error
 	}
@@ -22,9 +22,9 @@ func (repo *classQuery) Deleted(id int) error {
 }
 
 // Update implements classes.ClassDataInterface
-func (repo *classQuery) Update(id int, input classes.Core) error {
+func (repo *classQuery) Update(id int,UserId int, input classes.Core) error {
 	classInput := CoreToModel(input)
-	err := repo.db.Model(&Classes{}).Where("id=?", id).Updates(UpdateClass(classInput))
+	err := repo.db.Model(&Classes{}).Where("id=? AND user_id=?",id,UserId).Updates(UpdateClass(classInput))
 	if err != nil {
 		return err.Error
 	}
@@ -35,8 +35,9 @@ func (repo *classQuery) Update(id int, input classes.Core) error {
 }
 
 // Insert implements classes.ClassDataInterface
-func (repo *classQuery) Insert(input classes.Core) error {
+func (repo *classQuery) Insert(input classes.Core,UserId int) error {
 	classInput := CoreToModel(input)
+	classInput.UserID = uint(UserId)
 	tx := repo.db.Create(&classInput)
 	if tx.Error != nil {
 		return tx.Error
