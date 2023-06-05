@@ -36,7 +36,6 @@ func (service *classService) Create(input classes.Core) error {
 		return errValidate
 	}
 
-	// Menyimpan data user ke database
 	errInsert := service.classData.Insert(input)
 	return errInsert
 }
