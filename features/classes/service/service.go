@@ -14,11 +14,17 @@ type classService struct {
 	validate  *validator.Validate
 }
 
+// Delete implements classes.ClassServiceInterface
+func (service *classService) Deleted(id int) error {
+	err := service.classData.Deleted(id)
+	return err
+}
+
 // Edit implements classes.ClassServiceInterface
 func (service *classService) Edit(id int, input classes.Core) error {
-	err := service.classData.Update(id,input)
-	if err != nil{
-		return fmt.Errorf("failed to update classses with ID %d:%w",id,err)
+	err := service.classData.Update(id, input)
+	if err != nil {
+		return fmt.Errorf("failed to update classses with ID %d:%w", id, err)
 	}
 	return nil
 }

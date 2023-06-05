@@ -1,8 +1,8 @@
 package handler
 
 import (
+	"alta/immersive-dashboard-api/app/helper"
 	"alta/immersive-dashboard-api/features/classes"
-	"alta/immersive-dashboard-api/helper"
 	"net/http"
 	"strconv"
 	"strings"
@@ -57,4 +57,18 @@ func (handler *ClassHandler) UpdateClass(c echo.Context) error{
 		return c.JSON(http.StatusBadRequest, helper.FailedResponse("error update data"))
 	}
 	return c.JSON(http.StatusOK, helper.SuccessResponse("update successfuly"))
+}
+
+func (handler *ClassHandler) DeleteClass(c echo.Context) error{
+	id := c.Param("id")
+	idConv, errConv := strconv.Atoi(id)
+	if errConv != nil{
+		return c.JSON(http.StatusBadRequest,helper.FailedResponse("Delete error"))
+	}
+
+	err := handler.classService.Deleted(idConv)
+	if err != nil{
+		return c.JSON(http.StatusBadRequest, helper.FailedResponse("error delete class"))
+	}
+	return c.JSON(http.StatusOK, helper.SuccessResponse("delete successfuly"))
 }

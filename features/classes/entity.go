@@ -19,10 +19,12 @@ type Core struct {
 type ClassDataInterface interface {
 	Insert(input Core) error
 	Update(id int,input Core) error
+	Deleted(id int) error
 
 }
 
 type ClassServiceInterface interface {
 	Create(input Core) error
 	Edit(id int,input Core) error
+	Deleted(id int) error
 }
