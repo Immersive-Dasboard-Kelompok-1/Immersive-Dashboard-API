@@ -59,18 +59,18 @@ func (repo *UserData) Update(userId uint, data users.Core) error {
 
 // Select implements users.UserDataInterface
 func (repo *UserData) Select(userId uint) (users.Core, error) {
-	var user Users 
+	var user Users
 	if tx := repo.db.Where("id = ?", userId).First(&user); tx.Error != nil {
 		return users.Core{}, tx.Error
 	}
 
 	mapUser := users.Core{
-		Id: user.ID,
-		FullName: user.FullName,
-		Email: user.Email,
-		Team: user.Team,
-		Role: user.Role,
-		Status: user.Status,
+		Id:        user.ID,
+		FullName:  user.FullName,
+		Email:     user.Email,
+		Team:      user.Team,
+		Role:      user.Role,
+		Status:    user.Status,
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,
 	}
@@ -78,14 +78,79 @@ func (repo *UserData) Select(userId uint) (users.Core, error) {
 	return mapUser, nil
 }
 
-// Delete implements users.UserDataInterface
-func (*UserData) Delete(userId uint) error {
-	panic("unimplemented")
+// SelectAll implements users.UserDataInterface
+func (repo *UserData) SelectAll() ([]users.Core, error) {
+	var _users []Users
+	if tx := repo.db.Find(&_users); tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	var allUsers []users.Core 
+	for _, user := range _users {
+		var data = users.Core{
+			Id: user.ID,
+			FullName: user.FullName,
+			Email: user.Email,
+			Team: user.Team,
+			Role: user.Role,
+			Status: user.Status,
+			CreatedAt: user.CreatedAt,
+			UpdatedAt: user.UpdatedAt,
+		}
+		allUsers = append(allUsers, data)
+	}
+
+	return allUsers, nil
 }
 
-// SelectAll implements users.UserDataInterface
-func (*UserData) SelectAll() ([]users.Core, error) {
-	panic("unimplemented")
+// Delete implements users.UserDataInterface
+func (repo *UserData) Delete(userId uint) error {
+	if tx := repo.db.Delete(&Users{}, userId); tx.Error != nil {
+		return tx.Error
+	}
+
+	if errChangeStatusUser := repo.changeStatusUser(userId, "deleted"); errChangeStatusUser != nil {
+		return errChangeStatusUser
+	}
+
+	return nil
+}
+
+// Login implements users.UserDataInterface
+func (repo *UserData) Login(email string, password string) (int, error) {
+	var user Users
+	if tx := repo.db.Where("email = ?", email).First(&user); tx.Error != nil {
+		return 0, tx.Error
+	}
+
+	match, err := helper.CheckPaswordHash(user.Password, password)
+	if err != nil {
+		return 0, err
+	}
+
+	if !match {
+		return 0, errors.New("kredensial tidak cocok")
+	}
+
+	if errChangeStatusUser := repo.changeStatusUser(user.ID, "active"); errChangeStatusUser != nil {
+		return 0, errChangeStatusUser
+	}
+
+	return int(user.ID), nil
+}
+
+func (repo *UserData) changeStatusUser(userId uint, status string) error {
+	var user Users
+	if tx := repo.db.Select("status").First(&user, userId); tx.Error != nil {
+		return tx.Error
+	}
+
+	user.Status = status
+	if tx := repo.db.Save(&user); tx.Error != nil {
+		return tx.Error
+	}
+
+	return nil
 }
 
 func New(db *gorm.DB) users.UserDataInterface {

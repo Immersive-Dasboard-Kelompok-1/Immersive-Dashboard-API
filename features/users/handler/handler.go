@@ -57,7 +57,6 @@ func (handler *UserHandler) PostUserHandler(c echo.Context) error {
 	} else {
 		return helper.StatusForbiddenResponse(c, "Anda haruslah seorang admin agar bisa menambahkan user")
 	}
-	return nil
 }
 
 func (handler *UserHandler) PutUserHandler(c echo.Context) error {
@@ -95,4 +94,59 @@ func (handler *UserHandler) PutUserHandler(c echo.Context) error {
 	} else {
 		return helper.StatusForbiddenResponse(c, "Anda harus admin jika ingin mengedit resource ini")
 	}
+}
+
+func (handler *UserHandler) GetAllUsersHandler(c echo.Context) error {
+	allUsers, errGetAll := handler.userService.GetAllUser()
+	if errGetAll != nil {
+		return helper.StatusInternalServerError(c)
+	}
+	return helper.StatusOKWithData(c, "Berhasil mendapatkan semua data pengguna terdaftar", allUsers)
+}
+
+func (handler *UserHandler) DeleteUserHandler(c echo.Context) error {
+	userId, _ := strconv.Atoi(c.Param("id"))
+	user := middlewares.ExtracTokenUserId(c)
+	userLoggedIn, err := handler.userService.GetUser(uint(user))
+	if err != nil {
+		return err
+	}
+
+	if userLoggedIn.Role == "admin" {
+		if errDelete := handler.userService.DeleteUser(uint(userId)); errDelete != nil {
+			if strings.Contains(err.Error(), "validation") {
+				return helper.StatusBadRequestResponse(c, "error validate payload: " + err.Error())
+			} else {
+				return helper.StatusInternalServerError(c)
+			}
+		}
+		return helper.StatusOK(c, "Berhasil menghapus data pengguna")
+	} else {
+		return helper.StatusForbiddenResponse(c, "Anda harus admin jika ingin menghapus resource ini")
+	}
+}
+
+func (handler *UserHandler) PostLoginUserHandler(c echo.Context) error {
+	var payload users.LoginUser
+	if errBind := c.Bind(&payload); errBind != nil {
+		if errBind == echo.ErrBadRequest {
+			return helper.StatusBadRequestResponse(c, "error bind payload " + errBind.Error())
+		}
+	}
+
+	userId, err := handler.userService.LoginUser(payload.Email, payload.Password)
+	if err != nil {
+		if strings.Contains(err.Error(), "kredensial tidak cocok") {
+			return helper.StatusBadRequestResponse(c, "Kredensial yang anda berikan tidak valid") 
+		}
+	}
+
+	accessToken, err := middlewares.CreateToken(userId)
+	if err != nil {
+		return err
+	}
+
+	return helper.StatusCreated(c, "Login Berhasil", map[string]any{
+		"accessToken": accessToken, 
+	})
 }
