@@ -104,12 +104,11 @@ func (repo *UserData) SelectAll() ([]users.Core, error) {
 
 // Delete implements users.UserDataInterface
 func (repo *UserData) Delete(userId uint) error {
-	if tx := repo.db.Delete(&Users{}, userId); tx.Error != nil {
-		return tx.Error
-	}
-
 	if errChangeStatusUser := repo.changeStatusUser(userId, "deleted"); errChangeStatusUser != nil {
 		return errChangeStatusUser
+	}
+	if tx := repo.db.Delete(&Users{}, userId); tx.Error != nil {
+		return tx.Error
 	}
 
 	return nil
@@ -136,11 +135,8 @@ func (repo *UserData) Login(email string, password string) (int, error) {
 
 func (repo *UserData) changeStatusUser(userId uint, status string) error {
 	var user Users
-	if tx := repo.db.First(&user, userId); tx.Error != nil {
-		return tx.Error
-	}
 
-	if tx := repo.db.Model(&user).Update("status", status); tx.Error != nil {
+	if tx := repo.db.Model(&user).Where("id = ?", userId).Update("status", status); tx.Error != nil {
 		return tx.Error
 	}
 
