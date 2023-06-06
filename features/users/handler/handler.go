@@ -46,14 +46,18 @@ func (handler *UserHandler) PostUserHandler(c echo.Context) error {
 			Role: payload.Role,
 			Status: payload.Status,
 		}
-		if err := handler.userService.AddUser(payloadMap); err != nil {
+		userId, err := handler.userService.AddUser(payloadMap); if err != nil {
 			if strings.Contains(err.Error(), "validation") {
 				return helper.StatusBadRequestResponse(c, "error validate payload: " + err.Error())
 			} else {
 				return helper.StatusInternalServerError(c)
 			}
-		} 
-		return helper.StatusCreated(c, "User berhasil ditambahkan", userId)
+		}
+		user, errGetUser := handler.userService.GetUser(userId);
+		if errGetUser != nil {
+			return helper.StatusInternalServerError(c)
+		}
+		return helper.StatusCreated(c, "User berhasil ditambahkan", user)
 	} else {
 		return helper.StatusForbiddenResponse(c, "Anda haruslah seorang admin agar bisa menambahkan user")
 	}
@@ -68,8 +72,8 @@ func (handler *UserHandler) PutUserHandler(c echo.Context) error {
 		}
 	}
 
-	user := middlewares.ExtracTokenUserId(c)
-	userLoggedIn, err := handler.userService.GetUser(uint(user))
+	userSession := middlewares.ExtracTokenUserId(c)
+	userLoggedIn, err := handler.userService.GetUser(uint(userSession))
 	if err != nil {
 		return err
 	}
@@ -90,7 +94,11 @@ func (handler *UserHandler) PutUserHandler(c echo.Context) error {
 				return helper.StatusInternalServerError(c)
 			}
 		}
-		return helper.StatusOK(c, "Berhasil memperbarui data pengguna")
+		user, errGetUser := handler.userService.GetUser(uint(userId));
+		if errGetUser != nil {
+			return helper.StatusInternalServerError(c)
+		}
+		return helper.StatusOKWithData(c, "Berhasil memperbarui data pengguna", user)
 	} else {
 		return helper.StatusForbiddenResponse(c, "Anda harus admin jika ingin mengedit resource ini")
 	}
@@ -136,6 +144,9 @@ func (handler *UserHandler) PostLoginUserHandler(c echo.Context) error {
 
 	userId, err := handler.userService.LoginUser(payload.Email, payload.Password)
 	if err != nil {
+		if strings.Contains(err.Error(), "email tidak terdaftar") {
+			return helper.StatusBadRequestResponse(c, "Email yang anda berikan tidak terdaftar")
+		}
 		if strings.Contains(err.Error(), "kredensial tidak cocok") {
 			return helper.StatusBadRequestResponse(c, "Kredensial yang anda berikan tidak valid") 
 		}

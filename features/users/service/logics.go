@@ -12,14 +12,14 @@ type UserService struct {
 }
 
 // AddUser implements users.UserServiceInterface
-func (service *UserService) AddUser(data users.Core) error {
+func (service *UserService) AddUser(data users.Core) (uint, error) {
 	if errValidate := service.validate.Struct(data); errValidate != nil {
-		return errValidate
+		return 0, errValidate
 	}
-	if err := service.userData.Insert(data); err != nil {
-		return err
+	userId, err := service.userData.Insert(data); if err != nil {
+		return 0, err
 	}
-	return nil
+	return userId, nil
 }
 
 // EditUser implements users.UserServiceInterface

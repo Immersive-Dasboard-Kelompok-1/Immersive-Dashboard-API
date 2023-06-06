@@ -20,7 +20,7 @@ type LoginUser struct {
 }
 
 type UserDataInterface interface {
-	Insert(data Core) error
+	Insert(data Core) (uint, error)
 	Update(userId uint, data Core) error
 	Select(userId uint) (Core, error)
 	SelectAll() ([]Core, error)
@@ -29,7 +29,7 @@ type UserDataInterface interface {
 }
 
 type UserServiceInterface interface {
-	AddUser(data Core) error
+	AddUser(data Core) (uint, error)
 	EditUser(userId uint, data Core) error
 	GetUser(userId uint) (Core, error)
 	GetAllUser() ([]Core, error)
