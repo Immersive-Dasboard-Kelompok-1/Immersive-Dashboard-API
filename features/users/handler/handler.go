@@ -144,6 +144,9 @@ func (handler *UserHandler) PostLoginUserHandler(c echo.Context) error {
 
 	userId, err := handler.userService.LoginUser(payload.Email, payload.Password)
 	if err != nil {
+		if strings.Contains(err.Error(), "email tidak terdaftar") {
+			return helper.StatusBadRequestResponse(c, "Email yang anda berikan tidak terdaftar")
+		}
 		if strings.Contains(err.Error(), "kredensial tidak cocok") {
 			return helper.StatusBadRequestResponse(c, "Kredensial yang anda berikan tidak valid") 
 		}

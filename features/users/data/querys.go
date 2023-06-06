@@ -119,7 +119,7 @@ func (repo *UserData) Delete(userId uint) error {
 func (repo *UserData) Login(email string, password string) (int, error) {
 	var user Users
 	if tx := repo.db.Where("email = ?", email).First(&user); tx.Error != nil {
-		return 0, tx.Error
+		return 0, errors.New("email tidak terdaftar")
 	}
 	
 	match := helper.CheckPaswordHash(password, user.Password)
