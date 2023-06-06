@@ -23,6 +23,9 @@ func main() {
 	echo.Pre(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: `[${time_rfc3339}] ${status} ${method} ${host}${path} ${latency_human}` + "\n",
 	}))
+	echo.Pre(middleware.RemoveTrailingSlash())
+	echo.Use(middleware.CORS())
+
 
 	routers.InitRouters(database, echo)
 

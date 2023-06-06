@@ -13,6 +13,7 @@ func StatusOK(c echo.Context, message string) error {
 	})
 }
 
+
 func StatusOKWithData(c echo.Context, message string, data any) error {
 	return c.JSON(http.StatusOK, map[string]any{
 		"status": "success",
