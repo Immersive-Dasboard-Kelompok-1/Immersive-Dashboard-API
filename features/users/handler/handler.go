@@ -146,7 +146,13 @@ func (handler *UserHandler) PostLoginUserHandler(c echo.Context) error {
 		return err
 	}
 
+	userData, err := handler.userService.GetUser(uint(userId))
+	if err != nil {
+		return err
+	}
+
 	return helper.StatusCreated(c, "Login Berhasil", map[string]any{
 		"accessToken": accessToken, 
+		"user": userData,
 	})
 }

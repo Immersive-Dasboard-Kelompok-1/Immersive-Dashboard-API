@@ -4,7 +4,7 @@ import "time"
 
 type Core struct {
 	Id 					uint 		
-	FullName		string 
+	FullName		string   
 	Email				string `validate:"required,email"`
 	Password		string `validate:"required"`
 	Team				string
