@@ -44,4 +44,4 @@ jobs:
             docker rm immersive-dashboard-container
             docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/immersive-dashboard
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/immersive-dashboard
-            docker run -d -p 80:80 -e JWT_ACCESS_TOKEN=${{ secrets.JWT_ACCESS_TOKEN }} -e DB_USERNAME=${{ secrets.DB_USERNAME }} -e DB_PASS=${{ secrets.DB_PASS }} -e DB_HOSTNAME=${{ secrets.DB_HOSTNAME }} -e DB_PORT=${{ secrets.DB_PORT }} -e DB_NAME=${{ secrets.DB_NAME }} --name immersive-dashboard-container ${{ secrets.DOCKERHUB_USERNAME }}/immersive-dashboard:latest
+            docker run -d -p 80:8080 -e JWT_ACCESS_TOKEN=${{ secrets.JWT_ACCESS_TOKEN }} -e DB_USERNAME=${{ secrets.DB_USERNAME }} -e DB_PASS=${{ secrets.DB_PASS }} -e DB_HOSTNAME=${{ secrets.DB_HOSTNAME }} -e DB_PORT=${{ secrets.DB_PORT }} -e DB_NAME=${{ secrets.DB_NAME }} --name immersive-dashboard-container ${{ secrets.DOCKERHUB_USERNAME }}/immersive-dashboard:latest
