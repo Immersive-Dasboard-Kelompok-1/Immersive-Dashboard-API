@@ -122,8 +122,8 @@ func (repo *UserData) Login(email string, password string) (int, error) {
 	if tx := repo.db.Where("email = ?", email).First(&user); tx.Error != nil {
 		return 0, tx.Error
 	}
-
-	match, err := helper.CheckPaswordHash(user.Password, password)
+	
+	match, err := helper.CheckPaswordHash(password, user.Password)
 	if err != nil {
 		return 0, err
 	}

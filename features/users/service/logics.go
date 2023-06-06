@@ -68,6 +68,7 @@ func (service *UserService) LoginUser(email string, password string) (int, error
 	if errValidate := service.validate.Struct(loginInput); errValidate != nil {
 		return 0, errValidate
 	}
+
 	userId, err := service.userData.Login(loginInput.Email, loginInput.Password)
 	if err != nil {
 		return 0, err
