@@ -13,10 +13,10 @@ type UserData struct {
 }
 
 // Insert implements users.UserDataInterface
-func (repo *UserData) Insert(data users.Core) error {
+func (repo *UserData) Insert(data users.Core) (uint, error) {
 	hashPassword, err := helper.HashPasword(data.Password)
 	if err != nil {
-		return errors.New("error hashing password: " + err.Error())
+		return 0, errors.New("error hashing password: " + err.Error())
 	}
 
 	userData := Users{
@@ -29,12 +29,11 @@ func (repo *UserData) Insert(data users.Core) error {
 	}
 
 	if tx := repo.db.Create(&userData); tx.Error != nil {
-		return tx.Error
+		return 0, tx.Error
 	} else if tx.RowsAffected == 0 {
-		return errors.New("insert data user failed, rows affected 0 ")
+		return 0, errors.New("insert data user failed, rows affected 0 ")
 	}
-
-	return nil
+	return userData.ID, nil
 }
 
 // Update implements users.UserDataInterface
@@ -123,11 +122,7 @@ func (repo *UserData) Login(email string, password string) (int, error) {
 		return 0, tx.Error
 	}
 	
-	match, err := helper.CheckPaswordHash(password, user.Password)
-	if err != nil {
-		return 0, err
-	}
-
+	match := helper.CheckPaswordHash(password, user.Password)
 	if !match {
 		return 0, errors.New("kredensial tidak cocok")
 	}
@@ -141,12 +136,11 @@ func (repo *UserData) Login(email string, password string) (int, error) {
 
 func (repo *UserData) changeStatusUser(userId uint, status string) error {
 	var user Users
-	if tx := repo.db.Select("status").First(&user, userId); tx.Error != nil {
+	if tx := repo.db.First(&user, userId); tx.Error != nil {
 		return tx.Error
 	}
 
-	user.Status = status
-	if tx := repo.db.Save(&user); tx.Error != nil {
+	if tx := repo.db.Model(&user).Update("status", status); tx.Error != nil {
 		return tx.Error
 	}
 
