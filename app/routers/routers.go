@@ -9,7 +9,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 
-	"alta/immersive-dashboard-api/app/middlewares"
 	_classData "alta/immersive-dashboard-api/features/classes/data"
 	_classHandler "alta/immersive-dashboard-api/features/classes/handler"
 	_classService "alta/immersive-dashboard-api/features/classes/service"
