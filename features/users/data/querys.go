@@ -19,7 +19,7 @@ func (repo *UserData) Insert(data users.Core) (uint, error) {
 		return 0, errors.New("error hashing password: " + err.Error())
 	}
 	data.Password = hashPassword
-	userData := CoreToUser(data)
+	userData := CoreToUsersModel(data)
 
 	if tx := repo.db.Create(&userData); tx.Error != nil {
 		return 0, tx.Error
@@ -37,11 +37,11 @@ func (repo *UserData) Update(userId uint, data users.Core) error {
 	}
 	hashPassword, err := helper.HashPasword(data.Password)
 	if err != nil {
-		return  errors.New("error hashing password: " + err.Error())
+		return errors.New("error hashing password: " + err.Error())
 	}
-	
+
 	data.Password = hashPassword
-	if tx := repo.db.Model(&user).Updates(CoreToUser(data)); tx.Error != nil {
+	if tx := repo.db.Model(&user).Updates(CoreToUsersModel(data)); tx.Error != nil {
 		return tx.Error
 	}
 
@@ -55,7 +55,7 @@ func (repo *UserData) Select(userId uint) (users.Core, error) {
 		return users.Core{}, tx.Error
 	}
 
-	mapUser := ModelToCore(user)
+	mapUser := UsersModelToCore(user)
 
 	return mapUser, nil
 }
@@ -67,9 +67,9 @@ func (repo *UserData) SelectAll() ([]users.Core, error) {
 		return nil, tx.Error
 	}
 
-	var allUsers []users.Core 
+	var allUsers []users.Core
 	for _, user := range _users {
-		var data = ModelToCore(user)
+		var data = UsersModelToCore(user)
 		allUsers = append(allUsers, data)
 	}
 
@@ -94,7 +94,7 @@ func (repo *UserData) Login(email string, password string) (int, error) {
 	if tx := repo.db.Where("email = ?", email).First(&user); tx.Error != nil {
 		return 0, errors.New("email tidak terdaftar")
 	}
-	
+
 	match := helper.CheckPaswordHash(password, user.Password)
 	if !match {
 		return 0, errors.New("kredensial tidak cocok")
@@ -105,6 +105,14 @@ func (repo *UserData) Login(email string, password string) (int, error) {
 	}
 
 	return int(user.ID), nil
+}
+
+// Logout implements users.UserDataInterface
+func (repo *UserData) Logout(userId uint) error {
+	if err := repo.changeStatusUser(userId, "not-active"); err != nil {
+		return err
+	}	
+	return nil
 }
 
 func (repo *UserData) changeStatusUser(userId uint, status string) error {

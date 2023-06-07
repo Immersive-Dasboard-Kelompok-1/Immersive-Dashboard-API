@@ -79,6 +79,13 @@ func (service *UserService) LoginUser(email string, password string) (int, error
 	return userId, nil
 }
 
+func (service *UserService) LogoutUser(userId uint) error {
+	if errLogout := service.userData.Logout(userId); errLogout != nil {
+		return errLogout
+	}
+	return nil
+}
+
 
 func New(userData users.UserDataInterface) users.UserServiceInterface {
 	return &UserService{

@@ -4,6 +4,7 @@ import (
 	"alta/immersive-dashboard-api/app/helper"
 	"alta/immersive-dashboard-api/app/middlewares"
 	"alta/immersive-dashboard-api/features/users"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -21,13 +22,12 @@ func New(service users.UserServiceInterface) *UserHandler {
 }
 
 func (handler *UserHandler) PostUserHandler(c echo.Context) error {
-	payload := RequestUser{}
+	payload := users.RequestUser{}
+	fmt.Println(payload)
 	if err := c.Bind(&payload); err != nil {
 		if err == echo.ErrBadRequest {
 			return helper.StatusBadRequestResponse(c, "error bind payload " + err.Error())
-		} else {
-			return helper.StatusInternalServerError(c)
-		}
+		} 
 	}
 
 	userId := middlewares.ExtracTokenUserId(c)
@@ -37,19 +37,20 @@ func (handler *UserHandler) PostUserHandler(c echo.Context) error {
 	}
 	
 	if userLoggedIn.Role == "admin" {
-		payloadMap := RequestToCoreUser(payload)
+		payloadMap := users.RequestToCoreUser(payload)
 		userId, err := handler.userService.AddUser(payloadMap); if err != nil {
 			if strings.Contains(err.Error(), "validation") {
 				return helper.StatusBadRequestResponse(c, "error validate payload: " + err.Error())
-			} else {
-				return helper.StatusInternalServerError(c)
-			}
+			}                   
 		}
 		user, errGetUser := handler.userService.GetUser(userId);
 		if errGetUser != nil {
-			return helper.StatusInternalServerError(c)
+			return helper.StatusInternalServerError(c, err.Error())
 		}
-		return helper.StatusCreated(c, "User berhasil ditambahkan", user)
+		responseDataUser := users.CoreToResponseUser(user)
+		return helper.StatusCreated(c, "User berhasil ditambahkan", map[string]any{
+			"user": responseDataUser,
+		})
 	} else {
 		return helper.StatusForbiddenResponse(c, "Anda haruslah seorang admin agar bisa menambahkan user")
 	}
@@ -57,7 +58,7 @@ func (handler *UserHandler) PostUserHandler(c echo.Context) error {
 
 func (handler *UserHandler) PutUserHandler(c echo.Context) error {
 	userId, _ := strconv.Atoi(c.Param("id"))
-	newData := RequestUser{}
+	newData := users.RequestUser{}
 	if errBind := c.Bind(&newData); errBind != nil {
 		if errBind == echo.ErrBadRequest {
 			return helper.StatusBadRequestResponse(c, "error bind payload " + errBind.Error())
@@ -71,17 +72,17 @@ func (handler *UserHandler) PutUserHandler(c echo.Context) error {
 	}
 	
 	if userLoggedIn.Role == "admin" {
-		newDataMap := RequestToCoreUser(newData)
+		newDataMap := users.RequestToCoreUser(newData)
 		if err := handler.userService.EditUser(uint(userId), newDataMap); err != nil {
 			if strings.Contains(err.Error(), "validation") {
 				return helper.StatusBadRequestResponse(c, "error validate payload: " + err.Error())
 			} else {
-				return helper.StatusInternalServerError(c)
+				return helper.StatusInternalServerError(c, err.Error())
 			}
 		}
 		user, errGetUser := handler.userService.GetUser(uint(userId));
 		if errGetUser != nil {
-			return helper.StatusInternalServerError(c)
+			return helper.StatusInternalServerError(c, err.Error())
 		}
 		return helper.StatusOKWithData(c, "Berhasil memperbarui data pengguna", user)
 	} else {
@@ -89,12 +90,35 @@ func (handler *UserHandler) PutUserHandler(c echo.Context) error {
 	}
 }
 
+func (handler *UserHandler) GetUserHandler(c echo.Context) error {
+	userId, err := strconv.Atoi(c.Param("id"))
+	if userId == 0 || err != nil {
+		return helper.StatusNotFoundResponse(c, "Data user tidak ditemukan")
+	}
+	user, err := handler.userService.GetUser(uint(userId))
+	if err != nil {
+		return helper.StatusBadRequestResponse(c, err.Error())
+	}
+	mapUser := users.CoreToResponseUser(user)
+	return helper.StatusOKWithData(c, "Berhasil mendapatkan data user", map[string]any{
+		"user": mapUser,
+	})
+}
+
 func (handler *UserHandler) GetAllUsersHandler(c echo.Context) error {
 	allUsers, errGetAll := handler.userService.GetAllUser()
 	if errGetAll != nil {
-		return helper.StatusInternalServerError(c)
+		return helper.StatusInternalServerError(c, errGetAll.Error())
 	}
-	return helper.StatusOKWithData(c, "Berhasil mendapatkan semua data pengguna terdaftar", allUsers)
+	var mapAllUsers []users.ResponseUser
+	for _, user := range allUsers {
+		mapUser := users.CoreToResponseUser(user)
+		mapAllUsers = append(mapAllUsers, mapUser)
+	}
+
+	return helper.StatusOKWithData(c, "Berhasil mendapatkan semua data pengguna terdaftar", map[string]any{
+		"users": mapAllUsers,
+	})
 }
 
 func (handler *UserHandler) DeleteUserHandler(c echo.Context) error {
@@ -110,7 +134,7 @@ func (handler *UserHandler) DeleteUserHandler(c echo.Context) error {
 			if strings.Contains(err.Error(), "validation") {
 				return helper.StatusBadRequestResponse(c, "error validate payload: " + err.Error())
 			} else {
-				return helper.StatusInternalServerError(c)
+				return helper.StatusInternalServerError(c, err.Error())
 			}
 		}
 		return helper.StatusOK(c, "Berhasil menghapus data pengguna")
@@ -130,13 +154,13 @@ func (handler *UserHandler) PostLoginUserHandler(c echo.Context) error {
 	userId, err := handler.userService.LoginUser(payload.Email, payload.Password)
 	if err != nil {
 		if strings.Contains(err.Error(), "validation") {
-			return helper.StatusBadRequestResponse(c, "Input tidak valid, harap isi email dan password sesuai ketentuan")
+			return helper.StatusAuthorizationErrorResponse(c, "Input tidak valid, harap isi email dan password sesuai ketentuan")
 		}
 		if strings.Contains(err.Error(), "email tidak terdaftar") {
 			return helper.StatusBadRequestResponse(c, "Email yang anda berikan tidak terdaftar")
 		}
 		if strings.Contains(err.Error(), "kredensial tidak cocok") {
-			return helper.StatusBadRequestResponse(c, "Kredensial yang anda berikan tidak valid") 
+			return helper.StatusAuthorizationErrorResponse(c, "Kredensial yang anda berikan tidak valid") 
 		}
 	}
 
@@ -150,8 +174,17 @@ func (handler *UserHandler) PostLoginUserHandler(c echo.Context) error {
 		return err
 	}
 
-	return helper.StatusCreated(c, "Login Berhasil", map[string]any{
+		return helper.StatusCreated(c, "Login Berhasil", map[string]any{
 		"accessToken": accessToken, 
 		"user": userData,
 	})
+}
+
+func (handler *UserHandler) PutLogoutHandler(c echo.Context) error {
+	userId := middlewares.ExtracTokenUserId(c)
+	if err := handler.userService.LogoutUser(uint(userId)); err != nil {
+		return helper.StatusBadRequestResponse(c, err.Error())
+	}
+
+	return helper.StatusOK(c, "Berhasil logout")
 }

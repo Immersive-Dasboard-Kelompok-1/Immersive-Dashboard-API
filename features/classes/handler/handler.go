@@ -34,7 +34,7 @@ func (handler *ClassHandler) CreateClass(c echo.Context) error{
 		if strings.Contains(err.Error(),"validation"){
 			return helper.StatusBadRequestResponse(c, err.Error())
 		} else {
-			return helper.StatusInternalServerError(c)
+			return helper.StatusInternalServerError(c, err.Error())
 		}
 	}
 	return helper.StatusOK(c, "insert successfuly")
