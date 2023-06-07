@@ -2,7 +2,6 @@ package handler
 
 import (
 	"alta/immersive-dashboard-api/app/helper"
-	"alta/immersive-dashboard-api/app/middlewares"
 	"alta/immersive-dashboard-api/features/classes"
 	"strconv"
 	"strings"
@@ -21,7 +20,7 @@ func New(service classes.ClassServiceInterface) *ClassHandler{
 }
 
 func (handler *ClassHandler) CreateClass(c echo.Context) error{
-	userId := middlewares.ExtracTokenUserId(c)
+
 	classInput := ClassRequest{}
 	errBind := c.Bind(&classInput)
 	if errBind != nil{
@@ -29,7 +28,7 @@ func (handler *ClassHandler) CreateClass(c echo.Context) error{
 	}
 	classCore := RequestToCore(classInput)
 
-	err := handler.classService.Create(classCore,userId )
+	err := handler.classService.Create(classCore)
 	if err != nil{
 		if strings.Contains(err.Error(),"validation"){
 			return helper.StatusBadRequestResponse(c, err.Error())
