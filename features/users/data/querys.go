@@ -18,15 +18,8 @@ func (repo *UserData) Insert(data users.Core) (uint, error) {
 	if err != nil {
 		return 0, errors.New("error hashing password: " + err.Error())
 	}
-
-	userData := Users{
-		FullName: data.FullName,
-		Email:    data.Email,
-		Password: hashPassword,
-		Team:     data.Team,
-		Role:     data.Role,
-		Status:   data.Status,
-	}
+	data.Password = hashPassword
+	userData := CoreToUser(data)
 
 	if tx := repo.db.Create(&userData); tx.Error != nil {
 		return 0, tx.Error
@@ -42,14 +35,13 @@ func (repo *UserData) Update(userId uint, data users.Core) error {
 	if tx := repo.db.Where("id = ?", userId).First(&user); tx.Error != nil {
 		return tx.Error
 	}
-
-	if tx := repo.db.Model(&user).Updates(Users{
-		FullName: data.FullName,
-		Email:    data.Email,
-		Team:     data.Team,
-		Role:     data.Role,
-		Status:   data.Status,
-	}); tx.Error != nil {
+	hashPassword, err := helper.HashPasword(data.Password)
+	if err != nil {
+		return  errors.New("error hashing password: " + err.Error())
+	}
+	
+	data.Password = hashPassword
+	if tx := repo.db.Model(&user).Updates(CoreToUser(data)); tx.Error != nil {
 		return tx.Error
 	}
 
@@ -63,16 +55,7 @@ func (repo *UserData) Select(userId uint) (users.Core, error) {
 		return users.Core{}, tx.Error
 	}
 
-	mapUser := users.Core{
-		Id:        user.ID,
-		FullName:  user.FullName,
-		Email:     user.Email,
-		Team:      user.Team,
-		Role:      user.Role,
-		Status:    user.Status,
-		CreatedAt: user.CreatedAt,
-		UpdatedAt: user.UpdatedAt,
-	}
+	mapUser := ModelToCore(user)
 
 	return mapUser, nil
 }
@@ -86,16 +69,7 @@ func (repo *UserData) SelectAll() ([]users.Core, error) {
 
 	var allUsers []users.Core 
 	for _, user := range _users {
-		var data = users.Core{
-			Id: user.ID,
-			FullName: user.FullName,
-			Email: user.Email,
-			Team: user.Team,
-			Role: user.Role,
-			Status: user.Status,
-			CreatedAt: user.CreatedAt,
-			UpdatedAt: user.UpdatedAt,
-		}
+		var data = ModelToCore(user)
 		allUsers = append(allUsers, data)
 	}
 
