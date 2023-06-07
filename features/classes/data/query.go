@@ -51,9 +51,8 @@ func (repo *classQuery) Update(id int, input classes.Core) error {
 }
 
 // Insert implements classes.ClassDataInterface
-func (repo *classQuery) Insert(input classes.Core, UserId int) error {
+func (repo *classQuery) Insert(input classes.Core) error {
 	classInput := CoreToModel(input)
-	classInput.UserID = uint(UserId)
 	tx := repo.db.Create(&classInput)
 	if tx.Error != nil {
 		return tx.Error

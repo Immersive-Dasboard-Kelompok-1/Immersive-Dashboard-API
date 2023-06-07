@@ -36,13 +36,13 @@ func (service *classService) Edit(id int, input classes.Core) error {
 }
 
 // Create implements classes.ClassServiceInterface
-func (service *classService) Create(input classes.Core, UserId int) error {
+func (service *classService) Create(input classes.Core) error {
 	errValidate := service.validate.Struct(input)
 	if errValidate != nil {
 		return errValidate
 	}
 
-	errInsert := service.classData.Insert(input, UserId)
+	errInsert := service.classData.Insert(input)
 	return errInsert
 }
 
