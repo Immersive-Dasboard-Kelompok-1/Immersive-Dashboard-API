@@ -1,6 +1,10 @@
 package data
 
-import "gorm.io/gorm"
+import (
+	"alta/immersive-dashboard-api/features/mentees/logs"
+
+	"gorm.io/gorm"
+)
 
 type MenteeLogs struct {
 	gorm.Model
@@ -8,4 +12,13 @@ type MenteeLogs struct {
 	Feedback		string	`gorm:"type:text"`
 	MenteeID		uint
 	UserID			uint
+}
+
+func CoreToModelLogs(input logs.Core) MenteeLogs{
+	return MenteeLogs{
+		Status: input.Status,
+		Feedback: input.Feedback,
+		MenteeID: input.MenteeID,
+		UserID: input.UserID,
+	}
 }

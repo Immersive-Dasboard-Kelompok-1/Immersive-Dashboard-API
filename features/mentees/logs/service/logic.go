@@ -6,9 +6,25 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type ServiceData struct {
-	LogsData logs.LogsDataInterface
+type LogsService struct {
+	logsData logs.LogsDataInterface
 	validate *validator.Validate
 }
 
-func New( Logs)
+// Add implements logs.LogsServiceInterface
+func (service *LogsService) Add(input logs.Core, userId uint) error {
+	if errValidate := service.validate.Struct(input); errValidate != nil {
+		return errValidate
+	}
+	err := service.logsData.Insert(input,userId); if err != nil {
+		return  err
+	}
+	return  nil
+}
+
+func New(logsData logs.LogsDataInterface) logs.LogsServiceInterface {
+	return &LogsService{
+		logsData: logsData,
+		validate: validator.New(),
+	}
+}

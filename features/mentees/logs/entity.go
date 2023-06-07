@@ -14,9 +14,9 @@ type Core struct {
 }
 
 type LogsDataInterface interface{
-	insert(userId uint) error
+	Insert(input Core,userId uint) error
 }
 
 type LogsServiceInterface interface{
-	Add(userId uint) error
+	Add(input Core,userId uint) error
 }
