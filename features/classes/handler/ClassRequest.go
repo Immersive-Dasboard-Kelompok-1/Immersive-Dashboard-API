@@ -17,3 +17,4 @@ func RequestToCore(input ClassRequest) classes.Core{
 		UserID: uint(input.UserID),
 	}
 }
+

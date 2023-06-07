@@ -12,6 +12,10 @@ import (
 	_classData "alta/immersive-dashboard-api/features/classes/data"
 	_classHandler "alta/immersive-dashboard-api/features/classes/handler"
 	_classService "alta/immersive-dashboard-api/features/classes/service"
+
+	_logsData "alta/immersive-dashboard-api/features/mentees/logs/data"
+	_logsHandler "alta/immersive-dashboard-api/features/mentees/logs/handler"
+	_logsService "alta/immersive-dashboard-api/features/mentees/logs/service"
 )
 
 func InitRouters(db *gorm.DB, e *echo.Echo) {
@@ -19,9 +23,13 @@ func InitRouters(db *gorm.DB, e *echo.Echo) {
 	UserService := userService.New(UserData)
 	UserHandler := userHandler.New(UserService)
   
-  classData := _classData.New(db)
+  	classData := _classData.New(db)
 	classService := _classService.New(classData)
 	classHandlerAPI := _classHandler.New(classService)
+
+	logsData := _logsData.New(db)
+	logsService := _logsService.New(logsData)
+	logsHandlerAPI := _logsHandler.New(logsService)
 
 	e.POST("/users", UserHandler.PostUserHandler, middlewares.JWTMiddleware())
 	e.PUT("/users/:id", UserHandler.PutUserHandler, middlewares.JWTMiddleware())
@@ -33,4 +41,6 @@ func InitRouters(db *gorm.DB, e *echo.Echo) {
 	e.PUT("/classes/:id",classHandlerAPI.UpdateClass,middlewares.JWTMiddleware())
 	e.DELETE("/classes/:id",classHandlerAPI.DeleteClass,middlewares.JWTMiddleware())
 	e.GET("/classes",classHandlerAPI.GetAll)
+
+	e.POST("/logs",logsHandlerAPI.CreateLogs,middlewares.JWTMiddleware())
 }
