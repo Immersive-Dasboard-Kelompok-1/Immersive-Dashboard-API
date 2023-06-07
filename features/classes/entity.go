@@ -10,8 +10,8 @@ type Core struct {
 	CreatedAt time.Time
 	UpdateAt time.Time
 	DeleteAt time.Time
-	Name    string
-	Tag     string
+	Name    string   `validation:"required,unique"`
+	Tag     string	 `validation:"required,unique"`
 	UserID uint
 	Mentees []mentee.Core
 }
