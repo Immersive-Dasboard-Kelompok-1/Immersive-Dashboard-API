@@ -87,3 +87,21 @@ func (handler *ClassHandler) GetAll(c echo.Context) error{
 	}
 	return helper.StatusOKWithData(c, "Success read data class", ClassResponAll)
 }
+
+func (handler *ClassHandler) GetByIdClass(c echo.Context) error{
+
+	id := c.Param("id")
+	idConv, errConv := strconv.Atoi(id)
+	if errConv != nil{
+		return helper.StatusBadRequestResponse(c, "error, id tidak sesuai")
+	}
+
+	result, err := handler.classService.GetById(idConv)
+	if err != nil {
+		return helper.StatusBadRequestResponse(c, "error read data")
+	}
+	ClassResponse := CoreToResponse(result)
+
+
+	return helper.StatusOKWithData(c, "Success read data class", ClassResponse)
+	}

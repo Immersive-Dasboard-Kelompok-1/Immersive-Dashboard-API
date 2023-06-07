@@ -11,20 +11,33 @@ type classQuery struct {
 	db *gorm.DB
 }
 
+// SelectById implements classes.ClassDataInterface
+func (repo *classQuery) SelectById(id int) (classes.Core, error) {
+	var classData Classes
+	tx := repo.db.First(&classData, id)
+	if tx.Error != nil {
+		return classes.Core{}, tx.Error
+	}
+
+	userCore := ModelToCore(classData)
+
+	return userCore, nil
+}
+
 // SelectAll implements classes.ClassDataInterface
 func (repo *classQuery) SelectAll() ([]classes.Core, error) {
 	var classDataAll []Classes
 	tx := repo.db.Find(&classDataAll)
-	if tx.Error != nil{
-		return []classes.Core{},tx.Error
+	if tx.Error != nil {
+		return []classes.Core{}, tx.Error
 	}
 
 	var classAll []classes.Core
-	for _,value := range classDataAll{
+	for _, value := range classDataAll {
 		classCore := ModelToCore(value)
 		classAll = append(classAll, classCore)
 	}
-	return  classAll, nil
+	return classAll, nil
 }
 
 // Delete implements classes.ClassDataInterface

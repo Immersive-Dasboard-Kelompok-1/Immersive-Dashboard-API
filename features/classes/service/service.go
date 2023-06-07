@@ -14,10 +14,16 @@ type classService struct {
 	validate  *validator.Validate
 }
 
+// GetById implements classes.ClassServiceInterface
+func (service *classService) GetById(id int) (classes.Core, error) {
+	data, err := service.classData.SelectById(id)
+	return data, err
+}
+
 // GetAll implements classes.ClassServiceInterface
 func (service *classService) GetAll() ([]classes.Core, error) {
 	dataClass, err := service.classData.SelectAll()
-	return dataClass,err
+	return dataClass, err
 }
 
 // Delete implements classes.ClassServiceInterface
