@@ -43,7 +43,6 @@ func (handler *LogsHandler) CreateLogs(c echo.Context) error{
 
 func (handler *LogsHandler) EditLogs(c echo.Context) error{
 
-	userId := middlewares.ExtracTokenUserId(c)
 	logsInput := LogsRequest{}
 
 	id := c.Param("id")
@@ -58,11 +57,18 @@ func (handler *LogsHandler) EditLogs(c echo.Context) error{
 	}
 
 	logsCore :=RequestToCoreLogs(logsInput)
-	logsCore.UserID = uint(userId)
+
+	
+	
 	errUpdate := handler.logsService.Edit(logsCore,uint(idConv))
 	if errUpdate != nil{
-		return helper.StatusBadRequestResponse(c, "error update data")
+		if strings.Contains(errUpdate.Error(),"validation"){
+			return helper.StatusBadRequestResponse(c, errUpdate.Error())
+		} else {
+			return helper.StatusInternalServerError(c)
+		}
 	}
 
 	return helper.StatusOK(c, "update successfuly")
+
 	}

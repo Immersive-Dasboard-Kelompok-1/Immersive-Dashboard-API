@@ -3,7 +3,7 @@ package handler
 import "alta/immersive-dashboard-api/features/users"
 
 type RequestUser struct{
-	FullName		string		`json:"full_name" form:"full_name"`			
+	FullName		string		`json:"fullname" form:"fullname"`			
 	Email			string		`json:"email" form:"email"`				
 	Password		string		`json:"password" form:"password"`				
 	Team 			string 		`json:"team" form:"team"`				

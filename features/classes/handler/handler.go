@@ -28,15 +28,20 @@ func (handler *ClassHandler) CreateClass(c echo.Context) error{
 	}
 	classCore := RequestToCore(classInput)
 
-	err := handler.classService.Create(classCore)
-	if err != nil{
-		if strings.Contains(err.Error(),"validation"){
-			return helper.StatusBadRequestResponse(c, err.Error())
+	err, id := handler.classService.Create(classCore)
+	if err!= nil {
+		if strings.Contains(err.Error(), "validation") {
+			return helper.StatusBadRequestResponse(c, "error validate: " + err.Error())
 		} else {
 			return helper.StatusInternalServerError(c)
 		}
 	}
-	return helper.StatusOK(c, "insert successfuly")
+	class, errGetUser := handler.classService.GetById(int(id));
+	if errGetUser != nil {
+		return helper.StatusInternalServerError(c)
+	}
+	data := CoreToResponse(class)
+	return helper.StatusOKWithData(c, "Berhasil menambah data class", data)
 
 }
 
@@ -52,12 +57,23 @@ func (handler *ClassHandler) UpdateClass(c echo.Context) error{
 	if errBind != nil{
 		return helper.StatusBadRequestResponse(c, "bind error, update failed")
 	}
+
 	classCore :=RequestToCore(classInput)
-	errUpdate := handler.classService.Edit(idConv,classCore)
-	if errUpdate != nil{
-		return helper.StatusBadRequestResponse(c, "error update data")
+	errUpdate := handler.classService.Edit(idConv,classCore) 
+	if errUpdate!= nil {
+		if strings.Contains(errUpdate.Error(), "validation") {
+			return helper.StatusBadRequestResponse(c, "error validate: " + errUpdate.Error())
+		} else {
+			return helper.StatusInternalServerError(c)
+		}
 	}
-	return helper.StatusOK(c, "update successfuly")
+	class, errGetUser := handler.classService.GetById(idConv);
+	if errGetUser != nil {
+		return helper.StatusInternalServerError(c)
+	}
+	data := CoreToResponse(class)
+	return helper.StatusOKWithData(c, "Berhasil menambah data class", data)
+
 }
 
 func (handler *ClassHandler) DeleteClass(c echo.Context) error{
@@ -67,11 +83,22 @@ func (handler *ClassHandler) DeleteClass(c echo.Context) error{
 		return helper.StatusBadRequestResponse(c, "Delete error")
 	}
 
-	err := handler.classService.Deleted(idConv)
-	if err != nil{
-		return helper.StatusBadRequestResponse(c, "error delete class")
+	result, err := handler.classService.GetById(idConv)
+	if err != nil {
+		return helper.StatusBadRequestResponse(c, "id not found")
 	}
-	return helper.StatusOK(c, "delete successfuly")
+	data := CoreToResponse(result)
+
+	if err :=handler.classService.Deleted(idConv);err != nil {
+		if strings.Contains(err.Error(), "validation") {
+			return helper.StatusBadRequestResponse(c, "error validate payload: " + err.Error())
+		} else {
+			return helper.StatusInternalServerError(c)
+		}
+	}
+	
+	return helper.StatusOKWithData(c, "Success delete class", data)
+
 }
 
 func (handler *ClassHandler) GetAll(c echo.Context) error{
@@ -101,7 +128,6 @@ func (handler *ClassHandler) GetByIdClass(c echo.Context) error{
 		return helper.StatusBadRequestResponse(c, "error read data")
 	}
 	ClassResponse := CoreToResponse(result)
-
 
 	return helper.StatusOKWithData(c, "Success read data class", ClassResponse)
 	}

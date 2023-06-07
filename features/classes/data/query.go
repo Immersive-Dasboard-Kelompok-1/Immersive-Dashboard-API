@@ -64,16 +64,18 @@ func (repo *classQuery) Update(id int, input classes.Core) error {
 }
 
 // Insert implements classes.ClassDataInterface
-func (repo *classQuery) Insert(input classes.Core) error {
+func (repo *classQuery) Insert(input classes.Core) (error,uint) {
 	classInput := CoreToModel(input)
 	tx := repo.db.Create(&classInput)
 	if tx.Error != nil {
-		return tx.Error
+		return tx.Error,0
 	}
 	if tx.RowsAffected == 0 {
-		return errors.New("insert failes, row affected = 0")
+		return errors.New("insert failes, row affected = 0"),0
 	}
-	return nil
+	output := ModelToCore(classInput)
+	id := output.Id
+	return nil,id
 }
 
 func New(db *gorm.DB) classes.ClassDataInterface {

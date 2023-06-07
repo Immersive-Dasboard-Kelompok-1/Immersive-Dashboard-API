@@ -6,8 +6,8 @@ import (
 
 type ClassRequest struct {
 	Name   string `json:"name" form:"name"`
-	Tag    string `json:"tag" form:"tag"`
-	UserID uint    `json:"user_id" form:"user_id"`
+	Tag    string `json:"initialClass" form:"initialClass"`
+	UserID uint    `json:"userId" form:"userId"`
 }
 
 func RequestToCore(input ClassRequest) classes.Core{

@@ -42,14 +42,14 @@ func (service *classService) Edit(id int, input classes.Core) error {
 }
 
 // Create implements classes.ClassServiceInterface
-func (service *classService) Create(input classes.Core) error {
+func (service *classService) Create(input classes.Core) (error,uint) {
 	errValidate := service.validate.Struct(input)
 	if errValidate != nil {
-		return errValidate
+		return errValidate,0
 	}
 
-	errInsert := service.classData.Insert(input)
-	return errInsert
+	errInsert,nil := service.classData.Insert(input)
+	return errInsert,nil
 }
 
 func New(repo classes.ClassDataInterface) classes.ClassServiceInterface {
