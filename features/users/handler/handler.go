@@ -41,6 +41,8 @@ func (handler *UserHandler) PostUserHandler(c echo.Context) error {
 		userId, err := handler.userService.AddUser(payloadMap); if err != nil {
 			if strings.Contains(err.Error(), "validation") {
 				return helper.StatusBadRequestResponse(c, "error validate payload: " + err.Error())
+			} else if strings.Contains(err.Error(), "Duplicate entry") {
+				return helper.StatusBadRequestResponse(c, "email tidak tersedia")
 			}                   
 		}
 		user, errGetUser := handler.userService.GetUser(userId);
@@ -57,7 +59,10 @@ func (handler *UserHandler) PostUserHandler(c echo.Context) error {
 }
 
 func (handler *UserHandler) PutUserHandler(c echo.Context) error {
-	userId, _ := strconv.Atoi(c.Param("id"))
+	userId, errParam := strconv.Atoi(c.Param("id"))
+	if userId == 0 || errParam != nil {
+		return helper.StatusNotFoundResponse(c, errParam.Error())
+	}
 	newData := users.RequestUser{}
 	if errBind := c.Bind(&newData); errBind != nil {
 		if errBind == echo.ErrBadRequest {
