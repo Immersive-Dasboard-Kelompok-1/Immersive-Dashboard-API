@@ -66,7 +66,7 @@ func (repo *UserData) Select(userId uint) (users.Core, error) {
 // SelectAll implements users.UserDataInterface
 func (repo *UserData) SelectAll() ([]users.Core, error) {
 	var _users []Users
-	tx := repo.db.Find(&_users)
+	tx := repo.db.Find(&_users).Where("status != ?", "deleted")
 	if tx.Error != nil {
 		return nil, tx.Error
 	}

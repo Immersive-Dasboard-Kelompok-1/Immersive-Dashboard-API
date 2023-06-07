@@ -122,7 +122,10 @@ func (handler *UserHandler) GetAllUsersHandler(c echo.Context) error {
 }
 
 func (handler *UserHandler) DeleteUserHandler(c echo.Context) error {
-	userId, _ := strconv.Atoi(c.Param("id"))
+	userId, errParam := strconv.Atoi(c.Param("id"))
+	if userId == 0 || errParam != nil {
+		return helper.StatusNotFoundResponse(c, errParam.Error())
+	}
 	user := middlewares.ExtracTokenUserId(c)
 	userLoggedIn, err := handler.userService.GetUser(uint(user))
 	if err != nil {
