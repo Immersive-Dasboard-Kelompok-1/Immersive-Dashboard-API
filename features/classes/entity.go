@@ -21,6 +21,7 @@ type ClassDataInterface interface {
 	Update(id int, input Core) error
 	Deleted(id int) error
 	SelectAll()([]Core,error)
+	SelectById(id int)(Core,error)
 
 }
 
@@ -29,4 +30,5 @@ type ClassServiceInterface interface {
 	Edit(id int, input Core) error
 	Deleted(id int) error
 	GetAll()([]Core,error)
+	GetById(id int)(Core,error)
 }
