@@ -21,7 +21,8 @@ func (repo *UserData) Insert(data users.Core) (uint, error) {
 	data.Password = hashPassword
 	userData := CoreToUser(data)
 
-	if tx := repo.db.Create(&userData); tx.Error != nil {
+	tx := repo.db.Create(&userData)
+	if tx.Error != nil {
 		return 0, tx.Error
 	} else if tx.RowsAffected == 0 {
 		return 0, errors.New("insert data user failed, rows affected 0 ")
@@ -32,7 +33,8 @@ func (repo *UserData) Insert(data users.Core) (uint, error) {
 // Update implements users.UserDataInterface
 func (repo *UserData) Update(userId uint, data users.Core) error {
 	var user Users
-	if tx := repo.db.Where("id = ?", userId).First(&user); tx.Error != nil {
+	tx := repo.db.Where("id = ?", userId).First(&user)
+	if tx.Error != nil {
 		return tx.Error
 	}
 	hashPassword, err := helper.HashPasword(data.Password)
@@ -51,7 +53,8 @@ func (repo *UserData) Update(userId uint, data users.Core) error {
 // Select implements users.UserDataInterface
 func (repo *UserData) Select(userId uint) (users.Core, error) {
 	var user Users
-	if tx := repo.db.Where("id = ?", userId).First(&user); tx.Error != nil {
+	tx := repo.db.Where("id = ?", userId).First(&user)
+	if tx.Error != nil {
 		return users.Core{}, tx.Error
 	}
 
@@ -63,7 +66,8 @@ func (repo *UserData) Select(userId uint) (users.Core, error) {
 // SelectAll implements users.UserDataInterface
 func (repo *UserData) SelectAll() ([]users.Core, error) {
 	var _users []Users
-	if tx := repo.db.Find(&_users); tx.Error != nil {
+	tx := repo.db.Find(&_users)
+	if tx.Error != nil {
 		return nil, tx.Error
 	}
 
@@ -81,7 +85,8 @@ func (repo *UserData) Delete(userId uint) error {
 	if errChangeStatusUser := repo.changeStatusUser(userId, "deleted"); errChangeStatusUser != nil {
 		return errChangeStatusUser
 	}
-	if tx := repo.db.Delete(&Users{}, userId); tx.Error != nil {
+	tx := repo.db.Delete(&Users{}, userId)
+	if tx.Error != nil {
 		return tx.Error
 	}
 
@@ -91,7 +96,8 @@ func (repo *UserData) Delete(userId uint) error {
 // Login implements users.UserDataInterface
 func (repo *UserData) Login(email string, password string) (int, error) {
 	var user Users
-	if tx := repo.db.Where("email = ?", email).First(&user); tx.Error != nil {
+	tx := repo.db.Where("email = ?", email).First(&user)
+	if tx.Error != nil {
 		return 0, errors.New("email tidak terdaftar")
 	}
 	
@@ -100,7 +106,8 @@ func (repo *UserData) Login(email string, password string) (int, error) {
 		return 0, errors.New("kredensial tidak cocok")
 	}
 
-	if errChangeStatusUser := repo.changeStatusUser(user.ID, "active"); errChangeStatusUser != nil {
+	errChangeStatusUser := repo.changeStatusUser(user.ID, "active")
+	if errChangeStatusUser != nil {
 		return 0, errChangeStatusUser
 	}
 
@@ -110,7 +117,8 @@ func (repo *UserData) Login(email string, password string) (int, error) {
 func (repo *UserData) changeStatusUser(userId uint, status string) error {
 	var user Users
 
-	if tx := repo.db.Model(&user).Where("id = ?", userId).Update("status", status); tx.Error != nil {
+	tx := repo.db.Model(&user).Where("id = ?", userId).Update("status", status)
+	if tx.Error != nil {
 		return tx.Error
 	}
 
