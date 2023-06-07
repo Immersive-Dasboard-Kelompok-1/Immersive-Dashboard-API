@@ -28,9 +28,9 @@ func (repo *classQuery) SelectAll() ([]classes.Core, error) {
 }
 
 // Delete implements classes.ClassDataInterface
-func (repo *classQuery) Deleted(id int, UserId int) error {
+func (repo *classQuery) Deleted(id int) error {
 	var classData Classes
-	errDelete := repo.db.Delete(&classData, "id=? AND user_id=?", id, UserId)
+	errDelete := repo.db.Delete(&classData, "id=?", id)
 	if errDelete.Error != nil {
 		return errDelete.Error
 	}
@@ -38,9 +38,9 @@ func (repo *classQuery) Deleted(id int, UserId int) error {
 }
 
 // Update implements classes.ClassDataInterface
-func (repo *classQuery) Update(id int, UserId int, input classes.Core) error {
+func (repo *classQuery) Update(id int, input classes.Core) error {
 	classInput := CoreToModel(input)
-	err := repo.db.Model(&Classes{}).Where("id=? AND user_id=?", id, UserId).Updates(UpdateClass(classInput))
+	err := repo.db.Model(&Classes{}).Where("id=?", id).Updates(UpdateClass(classInput))
 	if err != nil {
 		return err.Error
 	}

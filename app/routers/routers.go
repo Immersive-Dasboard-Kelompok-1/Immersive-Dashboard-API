@@ -42,5 +42,6 @@ func InitRouters(db *gorm.DB, e *echo.Echo) {
 	e.DELETE("/classes/:id",classHandlerAPI.DeleteClass,middlewares.JWTMiddleware())
 	e.GET("/classes",classHandlerAPI.GetAll)
 
-	e.POST("/logs",logsHandlerAPI.CreateLogs,middlewares.JWTMiddleware())
+	e.POST("/feedbacks",logsHandlerAPI.CreateLogs,middlewares.JWTMiddleware())
+	e.POST("/feedbacks/:id",logsHandlerAPI.EditLogs,middlewares.JWTMiddleware())
 }

@@ -13,10 +13,12 @@ type Core struct {
 	DeletedAt time.Time
 }
 
-type LogsDataInterface interface{
-	Insert(input Core,userId uint) error
+type LogsDataInterface interface {
+	Insert(input Core, userId uint) error
+	Update(input Core,id uint) error
 }
 
-type LogsServiceInterface interface{
-	Add(input Core,userId uint) error
+type LogsServiceInterface interface {
+	Add(input Core, userId uint) error
+	Edit(input Core, id uint) error
 }

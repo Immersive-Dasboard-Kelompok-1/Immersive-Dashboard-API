@@ -18,15 +18,15 @@ type Core struct {
 
 type ClassDataInterface interface {
 	Insert(input Core,UserId int) error
-	Update(id int,UserId int,input Core) error
-	Deleted(id int,UserId int) error
+	Update(id int, input Core) error
+	Deleted(id int) error
 	SelectAll()([]Core,error)
 
 }
 
 type ClassServiceInterface interface {
 	Create(input Core,UserId int) error
-	Edit(id int,UserId int,input Core) error
-	Deleted(id int,UserId int) error
+	Edit(id int, input Core) error
+	Deleted(id int) error
 	GetAll()([]Core,error)
 }
