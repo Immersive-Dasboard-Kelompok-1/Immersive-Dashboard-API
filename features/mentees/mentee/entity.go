@@ -18,10 +18,26 @@ type Core struct {
 	Phone           string 
 	Telegram        string 
 	Discord         string 
-	Institusi		string
+	Institusi				string
 	Email           string 
 	EmergencyName   string 
 	EmergencyPhone  string 
 	EmergencyStatus string 
 	// Logs						[]data.MenteeLogs `gorm:"foreignKey:MenteeID"`
+}
+
+type MenteeDataInterface interface {
+	Insert(data Core) (menteeId uint, err error)
+	Select(menteeId uint) (mentee Core, err error)
+	SelectAll() (mentees []Core)
+	Update(menteeId uint, data Core) (mentee Core, err error)
+	Delete(menteeId uint) error
+}
+
+type MenteeServiceInterface interface {
+	AddMentee(data Core) (menteeId uint, err error)
+	GetMenteeById(menteeId uint) (mentee Core, err error)
+	GetMentees() (mentees []Core)
+	EditMentee(menteeId uint, data Core) (mentee Core, err error)
+	DeleteMentee(menteeId uint) error
 }
