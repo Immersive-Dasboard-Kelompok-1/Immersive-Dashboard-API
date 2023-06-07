@@ -7,11 +7,11 @@ type Core struct {
 	CreatedAt time.Time
 	UpdateAt time.Time
 	DeleteAt time.Time
-	FullName        string 
-	NickName        string 
-	ClassID         uint
-	Status          string 
-	Category        string 
+	FullName        string  `validation:"required"`
+	NickName        string 	
+	ClassID         uint		`validation:"required"`
+	Status          string 	`validation:"required"`
+	Category        string 	
 	Gender          string 
 	Graduate        string 
 	Mayor           string 
