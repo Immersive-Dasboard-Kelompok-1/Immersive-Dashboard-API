@@ -21,14 +21,14 @@ func (service *classService) GetAll() ([]classes.Core, error) {
 }
 
 // Delete implements classes.ClassServiceInterface
-func (service *classService) Deleted(id int, UserId int) error {
-	err := service.classData.Deleted(id, UserId)
+func (service *classService) Deleted(id int) error {
+	err := service.classData.Deleted(id)
 	return err
 }
 
 // Edit implements classes.ClassServiceInterface
-func (service *classService) Edit(id int, UserId int, input classes.Core) error {
-	err := service.classData.Update(id, UserId, input)
+func (service *classService) Edit(id int, input classes.Core) error {
+	err := service.classData.Update(id, input)
 	if err != nil {
 		return fmt.Errorf("failed to update classses with ID %d:%w", id, err)
 	}

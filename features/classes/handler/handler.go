@@ -42,7 +42,7 @@ func (handler *ClassHandler) CreateClass(c echo.Context) error{
 }
 
 func (handler *ClassHandler) UpdateClass(c echo.Context) error{
-	userId := middlewares.ExtracTokenUserId(c)
+
 	id := c.Param("id")
 	classInput := ClassRequest{}
 	idConv, errConv := strconv.Atoi(id)
@@ -54,7 +54,7 @@ func (handler *ClassHandler) UpdateClass(c echo.Context) error{
 		return helper.StatusBadRequestResponse(c, "bind error, update failed")
 	}
 	classCore :=RequestToCore(classInput)
-	errUpdate := handler.classService.Edit(idConv,userId,classCore)
+	errUpdate := handler.classService.Edit(idConv,classCore)
 	if errUpdate != nil{
 		return helper.StatusBadRequestResponse(c, "error update data")
 	}
@@ -62,14 +62,13 @@ func (handler *ClassHandler) UpdateClass(c echo.Context) error{
 }
 
 func (handler *ClassHandler) DeleteClass(c echo.Context) error{
-	userId := middlewares.ExtracTokenUserId(c)
 	id := c.Param("id")
 	idConv, errConv := strconv.Atoi(id)
 	if errConv != nil{
 		return helper.StatusBadRequestResponse(c, "Delete error")
 	}
 
-	err := handler.classService.Deleted(idConv,userId)
+	err := handler.classService.Deleted(idConv)
 	if err != nil{
 		return helper.StatusBadRequestResponse(c, "error delete class")
 	}
