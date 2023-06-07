@@ -4,7 +4,6 @@ import (
 	"alta/immersive-dashboard-api/app/helper"
 	"alta/immersive-dashboard-api/app/middlewares"
 	"alta/immersive-dashboard-api/features/users"
-	"alta/immersive-dashboard-api/features/users/data"
 	"strconv"
 	"strings"
 
@@ -22,7 +21,7 @@ func New(service users.UserServiceInterface) *UserHandler {
 }
 
 func (handler *UserHandler) PostUserHandler(c echo.Context) error {
-	payload := data.Users{}
+	payload := RequestUser{}
 	if err := c.Bind(&payload); err != nil {
 		if err == echo.ErrBadRequest {
 			return helper.StatusBadRequestResponse(c, "error bind payload " + err.Error())
@@ -38,14 +37,7 @@ func (handler *UserHandler) PostUserHandler(c echo.Context) error {
 	}
 	
 	if userLoggedIn.Role == "admin" {
-		payloadMap := users.Core{
-			FullName: payload.FullName,
-			Email: payload.Email,
-			Password: payload.Password,
-			Team: payload.Team,
-			Role: payload.Role,
-			Status: payload.Status,
-		}
+		payloadMap := RequestToCoreUser(payload)
 		userId, err := handler.userService.AddUser(payloadMap); if err != nil {
 			if strings.Contains(err.Error(), "validation") {
 				return helper.StatusBadRequestResponse(c, "error validate payload: " + err.Error())
@@ -65,7 +57,7 @@ func (handler *UserHandler) PostUserHandler(c echo.Context) error {
 
 func (handler *UserHandler) PutUserHandler(c echo.Context) error {
 	userId, _ := strconv.Atoi(c.Param("id"))
-	newData := data.Users{}
+	newData := RequestUser{}
 	if errBind := c.Bind(&newData); errBind != nil {
 		if errBind == echo.ErrBadRequest {
 			return helper.StatusBadRequestResponse(c, "error bind payload " + errBind.Error())
@@ -79,14 +71,7 @@ func (handler *UserHandler) PutUserHandler(c echo.Context) error {
 	}
 	
 	if userLoggedIn.Role == "admin" {
-		newDataMap := users.Core{
-			FullName:newData.FullName,
-			Email: newData.Email,
-			Password:newData.Password,
-			Team:newData.Team,
-			Role:newData.Role,
-			Status:newData.Status,
-		}
+		newDataMap := RequestToCoreUser(newData)
 		if err := handler.userService.EditUser(uint(userId), newDataMap); err != nil {
 			if strings.Contains(err.Error(), "validation") {
 				return helper.StatusBadRequestResponse(c, "error validate payload: " + err.Error())
