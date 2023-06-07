@@ -15,7 +15,8 @@ type LogsData struct {
 func (repo *LogsData) Update(input logs.Core, id uint) error {
 	var logs MenteeLogs
 	
-	if tx := repo.db.Model(&logs).Where("id=?",id).Updates(CoreToModelLogs(input)); tx.Error != nil {
+	tx := repo.db.Model(&logs).Where("id=?",id).Updates(CoreToModelLogs(input)) 
+	if tx.Error != nil {
 		return tx.Error
 	}
 

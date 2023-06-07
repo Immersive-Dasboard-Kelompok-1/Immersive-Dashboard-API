@@ -15,11 +15,12 @@ type Mentees struct {
 	Category				string 	`gorm:"type:enum('it','non-it')"`
 	Gender					string	`gorm:"type:enum('male','female')"`
 	Graduate				string	`gorm:"type:varchar(50)"`
-	Mayor						string	`gorm:"type:varchar(50)"`
-	Phone						string 	`gorm:"type:varchar(50)"`
+	Mayor					string	`gorm:"type:varchar(50)"`
+	Phone					string 	`gorm:"type:varchar(50)"`
 	Telegram				string	`gorm:"type:varchar(50)"`
 	Discord					string	`gorm:"type:varchar(50)"`
-	Email						string	`gorm:"type:varchar(50)"`
+	Institusi 				string	`gorm:"type:varchar(50)"`
+	Email					string	`gorm:"type:varchar(50)"`
 	EmergencyName		string	`gorm:"type:varchar(50)"`
 	EmergencyPhone	string	`gorm:"type:varchar(50)"`
 	EmergencyStatus	string	`gorm:"type:varchar(50)"`

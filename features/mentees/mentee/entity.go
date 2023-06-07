@@ -18,6 +18,7 @@ type Core struct {
 	Phone           string 
 	Telegram        string 
 	Discord         string 
+	Institusi		string
 	Email           string 
 	EmergencyName   string 
 	EmergencyPhone  string 
