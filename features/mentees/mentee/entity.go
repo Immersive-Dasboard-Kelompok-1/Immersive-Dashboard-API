@@ -1,6 +1,9 @@
 package mentee
 
-import "time"
+import (
+	"alta/immersive-dashboard-api/features/mentees/logs/data"
+	"time"
+)
 
 type Core struct {
 	Id        uint
@@ -23,5 +26,5 @@ type Core struct {
 	EmergencyName   string 
 	EmergencyPhone  string 
 	EmergencyStatus string 
-	// Logs						[]data.MenteeLogs `gorm:"foreignKey:MenteeID"`
+	Logs						[]data.MenteeLogs `gorm:"foreignKey:MenteeID"`
 }
