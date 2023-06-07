@@ -2,6 +2,7 @@ package service
 
 import (
 	"alta/immersive-dashboard-api/features/users"
+	"fmt"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -66,6 +67,7 @@ func (service *UserService) LoginUser(email string, password string) (int, error
 		Password: password,
 	}
 	if errValidate := service.validate.Struct(loginInput); errValidate != nil {
+		fmt.Println(errValidate)
 		return 0, errValidate
 	}
 
