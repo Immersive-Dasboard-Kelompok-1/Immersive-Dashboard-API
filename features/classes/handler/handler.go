@@ -33,12 +33,12 @@ func (handler *ClassHandler) CreateClass(c echo.Context) error{
 		if strings.Contains(err.Error(), "validation") {
 			return helper.StatusBadRequestResponse(c, "error validate: " + err.Error())
 		} else {
-			return helper.StatusInternalServerError(c)
+			return helper.StatusInternalServerError(c, err.Error())
 		}
 	}
 	class, errGetUser := handler.classService.GetById(int(id));
 	if errGetUser != nil {
-		return helper.StatusInternalServerError(c)
+		return helper.StatusInternalServerError(c, errGetUser.Error())
 	}
 	data := CoreToResponse(class)
 	return helper.StatusOKWithData(c, "Berhasil menambah data class", data)
@@ -64,12 +64,12 @@ func (handler *ClassHandler) UpdateClass(c echo.Context) error{
 		if strings.Contains(errUpdate.Error(), "validation") {
 			return helper.StatusBadRequestResponse(c, "error validate: " + errUpdate.Error())
 		} else {
-			return helper.StatusInternalServerError(c)
+			return helper.StatusInternalServerError(c, errUpdate.Error())
 		}
 	}
 	class, errGetUser := handler.classService.GetById(idConv);
 	if errGetUser != nil {
-		return helper.StatusInternalServerError(c)
+		return helper.StatusInternalServerError(c, errGetUser.Error())
 	}
 	data := CoreToResponse(class)
 	return helper.StatusOKWithData(c, "Berhasil menambah data class", data)
@@ -93,7 +93,7 @@ func (handler *ClassHandler) DeleteClass(c echo.Context) error{
 		if strings.Contains(err.Error(), "validation") {
 			return helper.StatusBadRequestResponse(c, "error validate payload: " + err.Error())
 		} else {
-			return helper.StatusInternalServerError(c)
+			return helper.StatusInternalServerError(c, err.Error())
 		}
 	}
 	

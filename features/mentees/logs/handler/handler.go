@@ -34,7 +34,7 @@ func (handler *LogsHandler) CreateLogs(c echo.Context) error{
 		if strings.Contains(err.Error(),"validation"){
 			return helper.StatusBadRequestResponse(c, err.Error())
 		} else {
-			return helper.StatusInternalServerError(c)
+			return helper.StatusInternalServerError(c, err.Error())
 		}
 	}
 	return helper.StatusOK(c, "insert successfuly")
@@ -65,7 +65,7 @@ func (handler *LogsHandler) EditLogs(c echo.Context) error{
 		if strings.Contains(errUpdate.Error(),"validation"){
 			return helper.StatusBadRequestResponse(c, errUpdate.Error())
 		} else {
-			return helper.StatusInternalServerError(c)
+			return helper.StatusInternalServerError(c, errUpdate.Error())
 		}
 	}
 
