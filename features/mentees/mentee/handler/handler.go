@@ -59,7 +59,20 @@ func (handler *MenteeHandler) GetMenteeByIdHandler(c echo.Context) error {
 }
 
 func (handler *MenteeHandler) GetMenteesHandler(c echo.Context) error {
-	allmentees, err := handler.menteeService.GetMentees()
+	querys := map[string]any{}
+	classId := c.QueryParam("classId")
+	if classId != "" {
+		querys["class_id"] = classId
+	}
+	status := c.QueryParam("status")
+	if status != "" {
+		querys["status"] = status
+	}
+	category := c.QueryParam("category")
+	if category != "" {
+		querys["category"] = category
+	}
+	allmentees, err := handler.menteeService.GetMentees(querys)
 	if err != nil {
 		return helper.StatusInternalServerError(c, err.Error())
 	} else {

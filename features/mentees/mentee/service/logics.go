@@ -33,8 +33,8 @@ func (service *MenteeService) GetMenteeById(menteeId uint) (mentee *mentee.Core,
 }
 
 // GetMentees implements mentee.MenteeServiceInterface
-func (service *MenteeService) GetMentees() (mentees []mentee.Core, err error) {
-	mentees, errData := service.menteeData.SelectAll()
+func (service *MenteeService) GetMentees(query map[string]any) (mentees []mentee.Core, err error) {
+	mentees, errData := service.menteeData.SelectAll(query)
 	if errData != nil {
 		return nil, errData
 	}

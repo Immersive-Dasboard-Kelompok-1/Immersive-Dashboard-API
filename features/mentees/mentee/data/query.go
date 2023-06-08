@@ -30,10 +30,16 @@ func (repo *MenteeData) Select(menteeId uint) (mentee *mentee.Core, err error) {
 }
 
 // SelectAll implements mentee.MenteeDataInterface
-func (repo *MenteeData) SelectAll() (mentees []mentee.Core, err error) {
+func (repo *MenteeData) SelectAll(query map[string]any) (mentees []mentee.Core, err error) {
 	var menteesData []Mentees
-	if tx := repo.db.Find(&menteesData).Where("deleted_at IS NULL"); tx.Error != nil {
-		return nil, tx.Error
+	if query == nil {
+		if tx := repo.db.Find(&menteesData); tx.Error != nil {
+			return nil, tx.Error
+		}
+	} else {
+		if tx := repo.db.Where(query).Find(&menteesData); tx.Error != nil {
+			return nil, tx.Error
+		}
 	}
 	var menteesMap []mentee.Core
 	for _, mentee := range menteesData {
