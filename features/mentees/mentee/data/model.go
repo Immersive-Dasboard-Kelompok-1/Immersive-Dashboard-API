@@ -13,8 +13,8 @@ type Mentees struct {
 	NickName				string	`gorm:"type:varchar(10)"`
 	ClassID					uint
 	Status					string	`gorm:"type:varchar(50)"`
-	Category				string 	`gorm:"type:enum('it','non-it')"`
-	Gender					string	`gorm:"type:enum('male','female')"`
+	Category				string 	`gorm:"type:varchar(50)"`
+	Gender					string	`gorm:"type:varchar(50)"`
 	Graduate				string	`gorm:"type:varchar(50)"`
 	Mayor					string	`gorm:"type:varchar(50)"`
 	Phone					string 	`gorm:"type:varchar(50)"`
@@ -52,6 +52,9 @@ func CoreToMenteeModel(mentee mentee.Core) Mentees {
 
 func MenteeModelToCore(menteeModel Mentees) mentee.Core {
 	return mentee.Core{
+		Id: menteeModel.ID,
+		CreatedAt: menteeModel.CreatedAt,
+		UpdateAt: menteeModel.UpdatedAt,
 		FullName: menteeModel.FullName,
 		NickName: menteeModel.NickName,
 		ClassID: menteeModel.ClassID,

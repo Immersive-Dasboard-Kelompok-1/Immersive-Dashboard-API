@@ -30,12 +30,12 @@ type Core struct {
 }
 
 type RequestCore struct {
-	FullName        string
-	NickName        string
-	ClassID					uint
-	Status					string
-	Category				string
-	Gender          string 
+	FullName        string `json:"fullname" form:"full_name"`
+	NickName        string 
+	ClassID					uint	 `json:"classId" form:"class_id"` 
+	Status					string `json:"status" form:"status"`
+	Category				string `json:"category" form:"category"`
+	Gender          string `json:"gender" form:"gender"`
 	Graduate        string 
 	Mayor           string 
 	Phone           string 

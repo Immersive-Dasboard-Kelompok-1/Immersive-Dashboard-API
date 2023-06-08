@@ -22,7 +22,7 @@ func (repo *MenteeData) Insert(data mentee.Core) (menteeId uint, err error) {
 // Select implements mentee.MenteeDataInterface
 func (repo *MenteeData) Select(menteeId uint) (mentee *mentee.Core, err error) {
 	var menteeData Mentees
-	if tx := repo.db.First(&mentee, menteeId); tx.Error != nil {
+	if tx := repo.db.First(&menteeData, menteeId); tx.Error != nil {
 		return nil, tx.Error
 	}
 	menteeMap := MenteeModelToCore(menteeData)
@@ -32,7 +32,7 @@ func (repo *MenteeData) Select(menteeId uint) (mentee *mentee.Core, err error) {
 // SelectAll implements mentee.MenteeDataInterface
 func (repo *MenteeData) SelectAll() (mentees []mentee.Core, err error) {
 	var menteesData []Mentees
-	if tx := repo.db.Find(&menteesData).Where("status != ?", "deleted"); tx.Error != nil {
+	if tx := repo.db.Find(&menteesData).Where("deleted_at IS NULL"); tx.Error != nil {
 		return nil, tx.Error
 	}
 	var menteesMap []mentee.Core
@@ -45,8 +45,13 @@ func (repo *MenteeData) SelectAll() (mentees []mentee.Core, err error) {
 
 // Update implements mentee.MenteeDataInterface
 func (repo *MenteeData) Update(menteeId uint, data mentee.Core) (mentee *mentee.Core, err error) {
+	var menteeData Mentees
+	if tx := repo.db.First(&menteeData, menteeId); tx.Error != nil {
+		return nil, tx.Error
+	}
+
 	menteeMap := CoreToMenteeModel(data)
-	if tx := repo.db.Model(&Mentees{}).Updates(menteeMap); tx.Error != nil {
+	if tx := repo.db.Model(&menteeData).Updates(menteeMap); tx.Error != nil {
 		return nil, tx.Error
 	}
 	return &data, nil
