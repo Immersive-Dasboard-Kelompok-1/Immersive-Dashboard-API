@@ -9,8 +9,8 @@ import (
 
 type Classes struct {
 	gorm.Model
-	Name			string 		`gorm:"type:varchar(50);notNull"`
-	Tag				string		`gorm:"type:varchar(10);notNull"`
+	Name			string 		`gorm:"type:varchar(50);notNull;unique"`
+	Tag				string		`gorm:"type:varchar(10);notNull;unique"`
 	UserID		uint
 	Mentees 	[]data.Mentees `gorm:"foreignKey:ClassID"`
 }
