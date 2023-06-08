@@ -83,4 +83,5 @@ type MenteeServiceInterface interface {
 	GetMentees() (mentees []Core, err error)
 	EditMentee(menteeId uint, data Core) (mentee *Core, err error)
 	DeleteMentee(menteeId uint) error
+
 }

@@ -12,9 +12,18 @@ type LogsService struct {
 	validate *validator.Validate
 }
 
+// GetById implements logs.LogsServiceInterface
+func (service *LogsService) GetById(id uint)  error {
+	 err := service.logsData.SelectById(id)
+	if err != nil {
+		return  err
+	}
+	return  err
+}
+
 // Edit implements logs.LogsServiceInterface
 func (service *LogsService) Edit(input logs.Core, id uint) error {
-	err := service.logsData.Update(input,id)
+	err := service.logsData.Update(input, id)
 	if err != nil {
 		return fmt.Errorf("failed to update classses with ID %d:%w", id, err)
 	}
@@ -22,15 +31,15 @@ func (service *LogsService) Edit(input logs.Core, id uint) error {
 }
 
 // Add implements logs.LogsServiceInterface
-func (service *LogsService) Add(input logs.Core, userId uint) error {
+func (service *LogsService) Add(input logs.Core, userId uint) (uint,error) {
 	if errValidate := service.validate.Struct(input); errValidate != nil {
-		return errValidate
+		return 0,errValidate
 	}
-	err := service.logsData.Insert(input, userId)
-	if err != nil {
-		return err
+	id, errAdd := service.logsData.Insert(input, userId)
+	if errAdd != nil {
+		return 0, errAdd
 	}
-	return nil
+	return id,nil
 }
 
 func New(logsData logs.LogsDataInterface) logs.LogsServiceInterface {
