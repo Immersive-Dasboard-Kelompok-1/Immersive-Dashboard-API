@@ -86,3 +86,26 @@ func (handler *LogsHandler) EditLogs(c echo.Context) error{
 
 	}
 
+	func (handler *LogsHandler) DeleteLogs(c echo.Context) error{
+		id := c.Param("id")
+		idConv, errConv := strconv.Atoi(id)
+		if errConv != nil{
+			return helper.StatusBadRequestResponse(c, "Delete error")
+		}
+	
+		err := handler.logsService.GetById(uint(idConv))
+		if err != nil {
+			return helper.StatusNotFoundResponse(c, "id not found")
+		}
+	
+		if err :=handler.logsService.Deleted(uint(idConv));err != nil {
+			if strings.Contains(err.Error(), "validation") {
+				return helper.StatusBadRequestResponse(c, "error validate payload: " + err.Error())
+			} else {
+				return helper.StatusInternalServerError(c, err.Error())
+			}
+		}
+		
+		return helper.StatusOK(c, "Success delete class")
+	
+	}
