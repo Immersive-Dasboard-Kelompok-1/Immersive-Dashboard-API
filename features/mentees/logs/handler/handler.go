@@ -109,3 +109,23 @@ func (handler *LogsHandler) EditLogs(c echo.Context) error{
 		return helper.StatusOK(c, "Success delete class")
 	
 	}
+
+	func (handler *LogsHandler) GetAllLogs(c echo.Context) error{
+
+		data,err := handler.logsService.GetAll()
+
+		var Logs []ResponseLog
+		for _,value := range data{
+			dataAll := ResponseLogCore(value)
+			Logs = append(Logs, dataAll)
+		}
+		
+		if err != nil {
+			return helper.StatusInternalServerError(c, err.Error())
+		} else {
+			return helper.StatusOKWithData(c, "Berhasil mendapatkan semua data mentee", map[string]any{
+				"mentees": Logs,
+			})
+		}
+	
+	}

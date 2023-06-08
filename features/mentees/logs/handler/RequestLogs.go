@@ -16,6 +16,7 @@ type Response struct{
 	UserID   uint
 }
 
+
 func RequestToCoreLogs(input LogsRequest) logs.Core{
 	return logs.Core{
 		Status: input.Status,
@@ -33,3 +34,5 @@ func CoreToResponseLogs(input logs.Core) Response{
 		UserID: input.UserID,
 	}
 }
+
+

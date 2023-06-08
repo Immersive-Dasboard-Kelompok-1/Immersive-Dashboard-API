@@ -11,6 +11,26 @@ type LogsData struct {
 	db *gorm.DB
 }
 
+
+// SelectAll implements logs.LogsDataInterface
+func (repo *LogsData) SelectAll() ([]logs.Core, error) {
+
+	var Logs []MenteeLogs
+	
+	err := repo.db.Preload("User").Preload("Mentee").Preload("Class").Find(&Logs).Error
+	if err != nil {
+		return nil, err
+	}
+
+	var logsAll []logs.Core
+	for _,value := range Logs{
+		valueLogs := ModelToCoreGetAll(value)
+		logsAll = append(logsAll, valueLogs)	
+	}
+	return logsAll, nil
+
+}
+
 // Deleted implements logs.LogsDataInterface
 func (repo *LogsData) Deleted(id uint) error {
 	var LogsData MenteeLogs
