@@ -29,5 +29,5 @@ func main() {
 
 	routers.InitRouters(database, echo)
 
-	echo.Logger.Fatal(echo.Start(":8080"))
+	echo.Logger.Fatal(echo.Start(":8000"))
 }

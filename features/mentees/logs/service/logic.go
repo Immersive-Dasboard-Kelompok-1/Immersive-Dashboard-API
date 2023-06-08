@@ -12,6 +12,15 @@ type LogsService struct {
 	validate *validator.Validate
 }
 
+// GetAll implements logs.LogsServiceInterface
+func (service *LogsService) GetAll() ([]logs.Core, error) {
+	dataClass, err := service.logsData.SelectAll()
+	if err != nil{
+		return []logs.Core{},err
+	}
+	return dataClass, nil
+}
+
 // Deleted implements logs.LogsServiceInterface
 func (service *LogsService) Deleted(id uint) error {
 	err := service.logsData.Deleted(id)
