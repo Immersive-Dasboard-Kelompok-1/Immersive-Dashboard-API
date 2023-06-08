@@ -72,7 +72,7 @@ func RequestToCoreMentee(data RequestCore) Core {
 type MenteeDataInterface interface {
 	Insert(data Core) (menteeId uint, err error)
 	Select(menteeId uint) (mentee *Core, err error)
-	SelectAll() (mentees []Core, err error)
+	SelectAll(query map[string]any) (mentees []Core, err error)
 	Update(menteeId uint, data Core) (mentee *Core, err error)
 	Delete(menteeId uint) error
 }
@@ -80,7 +80,7 @@ type MenteeDataInterface interface {
 type MenteeServiceInterface interface {
 	AddMentee(data Core) (menteeId uint, err error)
 	GetMenteeById(menteeId uint) (mentee *Core, err error)
-	GetMentees() (mentees []Core, err error)
+	GetMentees(query map[string]any) (mentees []Core, err error)
 	EditMentee(menteeId uint, data Core) (mentee *Core, err error)
 	DeleteMentee(menteeId uint) error
 

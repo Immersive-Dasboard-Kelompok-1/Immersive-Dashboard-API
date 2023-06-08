@@ -58,7 +58,7 @@ func StatusForbiddenResponse(c echo.Context, message string) error {
 	})
 }
 
-func StatusInternalServerError(c echo.Context, message string) error {
+func StatusInternalServerError(c echo.Context ,message string) error {
 	return c.JSON(http.StatusInternalServerError, map[string]any{
 		"status": "fail",
 		"message": "Terjadi kesalahan di server kami" + message,
