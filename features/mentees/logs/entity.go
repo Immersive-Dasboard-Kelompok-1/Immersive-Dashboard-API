@@ -17,10 +17,12 @@ type LogsDataInterface interface {
 	Insert(input Core, userId uint) (uint,error)
 	Update(input Core,id uint) error
 	SelectById(id uint)error
+	Deleted(id uint) error
 }
 
 type LogsServiceInterface interface {
 	Add(input Core, userId uint) (uint,error)
 	Edit(input Core, id uint) error
 	GetById(id uint)error
+	Deleted(id uint) error
 }

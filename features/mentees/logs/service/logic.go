@@ -12,13 +12,19 @@ type LogsService struct {
 	validate *validator.Validate
 }
 
+// Deleted implements logs.LogsServiceInterface
+func (service *LogsService) Deleted(id uint) error {
+	err := service.logsData.Deleted(id)
+	return err
+}
+
 // GetById implements logs.LogsServiceInterface
-func (service *LogsService) GetById(id uint)  error {
-	 err := service.logsData.SelectById(id)
+func (service *LogsService) GetById(id uint) error {
+	err := service.logsData.SelectById(id)
 	if err != nil {
-		return  err
+		return err
 	}
-	return  err
+	return err
 }
 
 // Edit implements logs.LogsServiceInterface
@@ -31,15 +37,15 @@ func (service *LogsService) Edit(input logs.Core, id uint) error {
 }
 
 // Add implements logs.LogsServiceInterface
-func (service *LogsService) Add(input logs.Core, userId uint) (uint,error) {
+func (service *LogsService) Add(input logs.Core, userId uint) (uint, error) {
 	if errValidate := service.validate.Struct(input); errValidate != nil {
-		return 0,errValidate
+		return 0, errValidate
 	}
 	id, errAdd := service.logsData.Insert(input, userId)
 	if errAdd != nil {
 		return 0, errAdd
 	}
-	return id,nil
+	return id, nil
 }
 
 func New(logsData logs.LogsDataInterface) logs.LogsServiceInterface {
