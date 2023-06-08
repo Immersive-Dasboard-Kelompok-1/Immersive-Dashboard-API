@@ -29,7 +29,7 @@ func (handler *LogsHandler) CreateLogs(c echo.Context) error{
 	}
 	logsCore := RequestToCoreLogs(logsInput)
 
-	err := handler.logsService.Add(logsCore,uint(userId) )
+	id,err := handler.logsService.Add(logsCore,uint(userId) )
 	if err != nil{
 		if strings.Contains(err.Error(),"validation"){
 			return helper.StatusBadRequestResponse(c, err.Error())
@@ -37,8 +37,13 @@ func (handler *LogsHandler) CreateLogs(c echo.Context) error{
 			return helper.StatusInternalServerError(c, err.Error())
 		}
 	}
-	return helper.StatusOK(c, "insert successfuly")
 
+	errGetUser := handler.logsService.GetById(id);
+	if errGetUser != nil {
+		return helper.StatusInternalServerError(c, errGetUser.Error())
+	}
+
+	return helper.StatusOK(c,"Data feedback berhasil ditambahkan")
 }
 
 func (handler *LogsHandler) EditLogs(c echo.Context) error{
@@ -58,17 +63,26 @@ func (handler *LogsHandler) EditLogs(c echo.Context) error{
 
 	logsCore :=RequestToCoreLogs(logsInput)
 
-	
-	
-	errUpdate := handler.logsService.Edit(logsCore,uint(idConv))
-	if errUpdate != nil{
-		if strings.Contains(errUpdate.Error(),"validation"){
-			return helper.StatusBadRequestResponse(c, errUpdate.Error())
-		} else {
-			return helper.StatusInternalServerError(c, errUpdate.Error())
+	errGetUser := handler.logsService.GetById(uint(idConv));
+	if errGetUser != nil {
+		return helper.StatusBadRequestResponse(c, "id tidak valid error, update failed")
+	}
+
+	if logsCore.Feedback == "" && logsCore.Status == "" && logsCore.MenteeID == 0 {
+		return helper.StatusBadRequestResponse(c, "data tidak ditemukan")
+	}else{
+		errUpdate := handler.logsService.Edit(logsCore,uint(idConv))
+		if errUpdate != nil{
+			if strings.Contains(errUpdate.Error(),"validation"){
+				return helper.StatusBadRequestResponse(c, errUpdate.Error())
+			} else {
+				return helper.StatusInternalServerError(c, errUpdate.Error())
+			}
 		}
-	}
-
-	return helper.StatusOK(c, "update successfuly")
 
 	}
+
+	return helper.StatusOK(c,"Data feedback berhasil diupdate")
+
+	}
+
