@@ -22,3 +22,13 @@ func CoreToModelLogs(input logs.Core) MenteeLogs{
 		UserID: input.UserID,
 	}
 }
+
+func LogsModelToCore(input MenteeLogs) logs.Core{
+	return logs.Core{
+		Id: input.ID,
+		Status:  input.Status,
+		Feedback: input.Feedback,
+		MenteeID: input.MenteeID,
+		UserID:   input.UserID,
+	}
+}

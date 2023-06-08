@@ -59,6 +59,10 @@ func (handler *ClassHandler) UpdateClass(c echo.Context) error{
 	}
 
 	classCore :=RequestToCore(classInput)
+	if classCore.Name == ""&&classCore.UserID==0 && classCore.Tag==""{
+		return helper.StatusBadRequestResponse(c, "data tidak ditemukan")
+	}else{
+
 	errUpdate := handler.classService.Edit(idConv,classCore) 
 	if errUpdate!= nil {
 		if strings.Contains(errUpdate.Error(), "validation") {
@@ -67,13 +71,15 @@ func (handler *ClassHandler) UpdateClass(c echo.Context) error{
 			return helper.StatusInternalServerError(c, errUpdate.Error())
 		}
 	}
+	}
+		
 	class, errGetUser := handler.classService.GetById(idConv);
 	if errGetUser != nil {
 		return helper.StatusInternalServerError(c, errGetUser.Error())
 	}
+	
 	data := CoreToResponse(class)
 	return helper.StatusOKWithData(c, "Berhasil menambah data class", data)
-
 }
 
 func (handler *ClassHandler) DeleteClass(c echo.Context) error{
