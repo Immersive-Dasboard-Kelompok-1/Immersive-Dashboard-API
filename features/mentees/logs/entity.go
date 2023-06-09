@@ -21,10 +21,10 @@ type CoreMentee struct {
 	CreatedAt time.Time
 	UpdateAt time.Time
 	DeleteAt time.Time
-	FullName        string  	`validation:"required"`
+	FullName        string  	
 	NickName        string 	
-	ClassID         uint		`validation:"required"`
-	Status          string 		`validation:"required"`
+	ClassID         uint		
+	Status          string 		
 	Category        string 	
 	Gender          string 
 	Graduate        string 
@@ -43,8 +43,8 @@ type CoreMentee struct {
 type CoreUsers struct {
 	Id 				uint 		
 	FullName		string   
-	Email			string `validate:"required,email"`
-	Password		string `validate:"required"`
+	Email			string 
+	Password		string 
 	Team			string
 	Role			string 
 	Status			string
@@ -57,8 +57,8 @@ type CoreClasses struct {
 	CreatedAt time.Time
 	UpdateAt time.Time
 	DeleteAt time.Time
-	Name    string   `validation:"required,unique"`
-	Tag     string	 `validation:"required,unique"`
+	Name    string   
+	Tag     string	 
 	UserID uint
 }
 
