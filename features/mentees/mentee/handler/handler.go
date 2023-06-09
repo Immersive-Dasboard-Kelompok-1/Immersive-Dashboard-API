@@ -96,7 +96,7 @@ func (handler *MenteeHandler) UpdateMenteeHandler(c echo.Context) error {
 	if err != nil {
 		return helper.StatusInternalServerError(c, err.Error())
 	} else {
-		return helper.StatusOKWithData(c, "Berhasil memperbarui data pengguna", map[string]any{
+		return helper.StatusOKWithData(c, "Berhasil memperbarui data mentee", map[string]any{
 			"mentee": mentee,
 		})
 	}
@@ -110,5 +110,5 @@ func (handler *MenteeHandler) DeleteMenteeHandler(c echo.Context) error {
 	if err := handler.menteeService.DeleteMentee(uint(menteeId)); err != nil {
 		return helper.StatusInternalServerError(c, err.Error())
 	}
-	return nil
+	return helper.StatusOK(c, "Berhasil menghapus data mentee")
 }
